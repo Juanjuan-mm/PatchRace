@@ -2,7 +2,7 @@ packages:
   - packages/*
 catalog:
   ajv: 8.18.0
-  yaml: 2.8.3
+  yaml: 2.9.0
 
 catalogMode: strict
 linkWorkspacePackages: false
