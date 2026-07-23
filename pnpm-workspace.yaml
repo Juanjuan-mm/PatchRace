@@ -1,7 +1,7 @@
 packages:
   - packages/*
 catalog:
-  ajv: 8.18.0
+  ajv: 8.20.0
   yaml: 2.8.3
 
 catalogMode: strict
