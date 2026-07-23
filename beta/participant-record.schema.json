@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://patchrace.dev/schemas/private-beta-participant-v1.json",
+  "title": "PatchRace private beta participant record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "participantId",
+    "sample",
+    "implementationAuthor",
+    "consent",
+    "environment",
+    "session",
+    "failures",
+    "feedback",
+    "evidence"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "participantId": {
+      "type": "string",
+      "pattern": "^beta-p[0-9]{2,3}$"
+    },
+    "sample": { "const": false },
+    "implementationAuthor": { "const": false },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["study", "minimizedRetention", "recordedAt"],
+      "properties": {
+        "study": { "const": true },
+        "minimizedRetention": { "const": true },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "architecture", "nodeMajor", "gitAvailable"],
+      "properties": {
+        "os": { "enum": ["macos", "linux"] },
+        "architecture": { "enum": ["arm64", "x64", "other"] },
+        "nodeMajor": { "enum": [22, 24] },
+        "gitAvailable": { "const": true },
+        "agentMode": {
+          "enum": ["provider-free", "pi", "claude-code", "codex", "mixed"]
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startedAt",
+        "endedAt",
+        "activationSeconds",
+        "installSeconds",
+        "preparedRunSeconds",
+        "liveMaintainerIntervention",
+        "preparedExampleValidReport",
+        "realisticRepositoryValidReport",
+        "reportExplanationCorrect",
+        "diagnosisCandidateUnderstood",
+        "repeatUse"
+      ],
+      "properties": {
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" },
+        "activationSeconds": { "type": "number", "minimum": 0 },
+        "installSeconds": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "preparedRunSeconds": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "liveMaintainerIntervention": { "type": "boolean" },
+        "preparedExampleValidReport": { "type": "boolean" },
+        "realisticRepositoryValidReport": { "type": "boolean" },
+        "reportExplanationCorrect": { "type": "boolean" },
+        "diagnosisCandidateUnderstood": { "type": "boolean" },
+        "repeatUse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outcome", "detail"],
+          "properties": {
+            "outcome": { "enum": ["returned", "concrete-intent", "none"] },
+            "detail": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "phase",
+          "classification",
+          "impact",
+          "status",
+          "summary"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^beta-issue-[0-9]{3}$" },
+          "phase": {
+            "enum": [
+              "install",
+              "prepared-example",
+              "report",
+              "teaching",
+              "realistic-repository",
+              "cleanup"
+            ]
+          },
+          "classification": {
+            "enum": [
+              "product-bug",
+              "documentation-or-usability",
+              "environment-or-adapter",
+              "invalid-task",
+              "agent-failure",
+              "expected-budget-stop",
+              "participant-choice",
+              "unknown"
+            ]
+          },
+          "impact": { "enum": ["P0", "P1", "P2", "P3"] },
+          "status": { "enum": ["open", "fixed", "deferred", "not-a-bug"] },
+          "summary": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valuable", "confusing", "missing", "repeatUseReason"],
+      "properties": {
+        "valuable": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "confusing": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "missing": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "repeatUseReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preparedReportHash", "realisticReportHash"],
+      "properties": {
+        "preparedReportHash": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "realisticReportHash": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "maintainer": "PatchRace maintainers",
+  "cases": [
+    {"id":"discovery-js-search-loop","expectedCategory":"discovery","scenario":"discovery","variant":0},
+    {"id":"discovery-python-search-loop","expectedCategory":"discovery","scenario":"discovery","variant":1},
+    {"id":"discovery-rust-search-loop","expectedCategory":"discovery","scenario":"discovery","variant":2},
+    {"id":"context-api-constraint","expectedCategory":"context","scenario":"context","variant":0},
+    {"id":"context-compat-instruction","expectedCategory":"context","scenario":"context","variant":1},
+    {"id":"context-protected-path","expectedCategory":"context","scenario":"context","variant":2},
+    {"id":"workflow-js-unchanged-retry","expectedCategory":"workflow","scenario":"workflow","variant":0},
+    {"id":"workflow-python-unchanged-retry","expectedCategory":"workflow","scenario":"workflow","variant":1},
+    {"id":"workflow-rust-unchanged-retry","expectedCategory":"workflow","scenario":"workflow","variant":2},
+    {"id":"tool-spawn-failure","expectedCategory":"tool","scenario":"tool","variant":0},
+    {"id":"tool-parser-failure","expectedCategory":"tool","scenario":"tool","variant":1},
+    {"id":"tool-executable-unavailable","expectedCategory":"tool","scenario":"tool","variant":2},
+    {"id":"verification-edit-after-failed-test","expectedCategory":"verification","scenario":"verification","variant":0},
+    {"id":"verification-missing-observed-test","expectedCategory":"verification","scenario":"verification","variant":1},
+    {"id":"verification-edit-after-passed-test","expectedCategory":"verification","scenario":"verification","variant":2},
+    {"id":"capability-adequate-js-trajectory","expectedCategory":"capability","scenario":"capability","variant":0},
+    {"id":"capability-adequate-python-trajectory","expectedCategory":"capability","scenario":"capability","variant":1},
+    {"id":"capability-adequate-rust-trajectory","expectedCategory":"capability","scenario":"capability","variant":2},
+    {"id":"unknown-integrity-unknown","expectedCategory":"unknown","scenario":"unknown","variant":0},
+    {"id":"unknown-integrity-compromised","expectedCategory":"unknown","scenario":"unknown","variant":1},
+    {"id":"unknown-gate-error","expectedCategory":"unknown","scenario":"unknown","variant":2}
+  ]
+}

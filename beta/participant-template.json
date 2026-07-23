@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "participantId": "beta-p00",
+  "sample": true,
+  "implementationAuthor": true,
+  "consent": {
+    "study": false,
+    "minimizedRetention": false,
+    "recordedAt": "2000-01-01T00:00:00.000Z"
+  },
+  "environment": {
+    "os": "macos",
+    "architecture": "other",
+    "nodeMajor": 22,
+    "gitAvailable": true,
+    "agentMode": "provider-free"
+  },
+  "session": {
+    "startedAt": "2000-01-01T00:00:00.000Z",
+    "endedAt": "2000-01-01T00:00:00.000Z",
+    "activationSeconds": 0,
+    "installSeconds": null,
+    "preparedRunSeconds": null,
+    "liveMaintainerIntervention": true,
+    "preparedExampleValidReport": false,
+    "realisticRepositoryValidReport": false,
+    "reportExplanationCorrect": false,
+    "diagnosisCandidateUnderstood": false,
+    "repeatUse": {
+      "outcome": "none",
+      "detail": "Replace with a paraphrased concrete response."
+    }
+  },
+  "failures": [],
+  "feedback": {
+    "valuable": "Replace with a paraphrased response.",
+    "confusing": "Replace with a paraphrased response.",
+    "missing": "Replace with a paraphrased response.",
+    "repeatUseReason": "Replace with a paraphrased response."
+  },
+  "evidence": {
+    "preparedReportHash": null,
+    "realisticReportHash": null
+  }
+}

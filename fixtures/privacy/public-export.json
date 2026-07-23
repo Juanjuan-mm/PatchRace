@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0.0",
+  "prompt": "Review Alice Example's & private prompt:\n\"do not publish\"",
+  "projectPath": "/Users/alice/Work & Notes/private-repository",
+  "credentialRecipes": [
+    {
+      "separator": "-",
+      "parts": ["sk", "qaabcdefghijklmnopqrstuvwxyz012345"]
+    },
+    {
+      "separator": "-",
+      "parts": ["sk-ant", "qaabcdefghijklmnopqrstuvwxyz012345"]
+    },
+    {
+      "separator": "",
+      "parts": ["ghp_", "abcdefghijklmnopqrstuvwxyz012345"]
+    },
+    {
+      "separator": "-",
+      "parts": ["xoxb", "1234567890", "abcdefghijklmnopqrstuv"]
+    },
+    {
+      "separator": "",
+      "parts": ["AKIA", "ABCDEFGHIJKLMNOP"]
+    }
+  ],
+  "sourceCode": "export const customerSecret = \"blue-orchid-customer-42\";",
+  "personalData": [
+    "Alice Example",
+    "alice.private@example.test",
+    "203.0.113.42"
+  ],
+  "unknownSecret": "novel-secret-format::qa07-visible-residual",
+  "falsePositiveControls": [
+    "sk-short-example",
+    "tokenCount",
+    "public@example.test"
+  ]
+}

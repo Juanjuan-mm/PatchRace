@@ -1,0 +1,32 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "@patchrace/adapters": "0.0.0",
+    "patchrace": "0.0.0",
+    "@patchrace/contracts": "0.0.0",
+    "@patchrace/core": "0.0.0",
+    "@patchrace/diagnosis": "0.0.0",
+    "@patchrace/optimizer": "0.0.0",
+    "pi-patchrace": "0.0.0",
+    "@patchrace/report": "0.0.0",
+    "@patchrace/tasks": "0.0.0"
+  },
+  "changesets": [
+    "accurate-cli-version",
+    "bright-runs-resume",
+    "m2-development-foundation",
+    "m4-agent-adapters",
+    "m5-task-contract",
+    "m6-comparison-product",
+    "m7-explainable-diagnosis",
+    "m8-pi-teaching-loop",
+    "m9-pi-native-ux",
+    "qa-01-hardening",
+    "qa-02-packed-cli",
+    "qa-03-chaos-hardening",
+    "qa-04-compatibility-floor",
+    "qa-06-no-follow-artifacts",
+    "qa-07-privacy-projection"
+  ]
+}

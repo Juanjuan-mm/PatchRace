@@ -1,0 +1,41 @@
+{
+  "name": "@patchrace/report",
+  "version": "0.1.0-rc.1",
+  "description": "PatchRace report model and static renderer foundations",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/songjinmiao/PatchRace.git",
+    "directory": "packages/report"
+  },
+  "homepage": "https://github.com/songjinmiao/PatchRace#readme",
+  "bugs": {
+    "url": "https://github.com/songjinmiao/PatchRace/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.0 <25"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/.tsbuildinfo",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@patchrace/contracts": "workspace:^"
+  }
+}

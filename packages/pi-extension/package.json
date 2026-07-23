@@ -1,0 +1,53 @@
+{
+  "name": "pi-patchrace",
+  "version": "0.1.0-rc.1",
+  "description": "Thin Pi-native integration boundary for PatchRace",
+  "keywords": [
+    "pi-package",
+    "patchrace",
+    "coding-agent",
+    "evaluation"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/songjinmiao/PatchRace.git",
+    "directory": "packages/pi-extension"
+  },
+  "homepage": "https://github.com/songjinmiao/PatchRace#readme",
+  "bugs": {
+    "url": "https://github.com/songjinmiao/PatchRace/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.0 <25"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "pi": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/.tsbuildinfo",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch --preserveWatchOutput"
+  },
+  "dependencies": {
+    "@patchrace/core": "workspace:^"
+  }
+}

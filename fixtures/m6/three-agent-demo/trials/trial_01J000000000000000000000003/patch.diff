@@ -1,0 +1,6 @@
+diff --git a/target.txt b/target.txt
+--- a/target.txt
++++ b/target.txt
+@@ -1 +1 @@
+-original
++correct

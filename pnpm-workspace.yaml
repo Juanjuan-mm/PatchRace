@@ -1,0 +1,13 @@
+packages:
+  - packages/*
+catalog:
+  ajv: 8.18.0
+  yaml: 2.8.3
+
+catalogMode: strict
+linkWorkspacePackages: false
+
+minimumReleaseAge: 1440
+
+onlyBuiltDependencies: []
+preferWorkspacePackages: true

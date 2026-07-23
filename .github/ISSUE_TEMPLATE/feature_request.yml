@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a bounded PatchRace workflow improvement
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user workflow is blocked or unnecessarily difficult?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the observable result, not only an implementation.
+    validations:
+      required: true
+  - type: dropdown
+    id: boundary
+    attributes:
+      label: Product boundary
+      options:
+        - Race and deterministic evaluation
+        - Evidence-linked diagnosis
+        - Project-local Pi teaching
+        - Adapter or grader contribution
+        - Reporting, privacy, or cleanup
+        - Documentation or installation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproduction or evidence
+      description: Include only public-safe fixtures or measurements.
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Safety constraints
+      options:
+        - label: The proposal does not require automatic telemetry or artifact upload.
+          required: true
+        - label: The proposal does not silently mutate global Pi state or activate generated executable extensions.
+          required: true

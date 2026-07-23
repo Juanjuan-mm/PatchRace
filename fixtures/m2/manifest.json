@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenarios": [
+    { "id": "success-typescript", "path": "success-typescript", "expectedExit": 0 },
+    { "id": "success-python", "path": "success-python", "expectedExit": 0 },
+    { "id": "failure", "path": "failure", "expectedExit": 1 },
+    { "id": "dirty-state", "path": "dirty-state", "dirtyFile": "user-change.txt" },
+    { "id": "hidden-test", "path": "hidden-test" },
+    { "id": "timeout", "path": "timeout", "timeoutMs": 100 },
+    { "id": "conflicting-patch", "path": "conflicting-patch" }
+  ]
+}
