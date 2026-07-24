@@ -20,22 +20,40 @@ function run(executable, arguments_, options = {}) {
     cwd: options.cwd ?? workingRoot,
     encoding: "utf8",
     env: process.env,
-    stdio: options.capture ? "pipe" : "inherit",
+    stdio: "pipe",
   });
+  if (!options.capture) {
+    if (result.stdout) process.stdout.write(result.stdout);
+    if (result.stderr) process.stderr.write(result.stderr);
+  }
   if (result.error) {
-    throw new Error(
+    const error = new Error(
       `Cannot start ${executable} ${arguments_.join(" ")}: ${result.error.message}`,
       { cause: result.error },
     );
+    reportGitHubError(error.message);
+    throw error;
   }
   if (result.status !== 0) {
-    throw new Error(
+    const error = new Error(
       `${executable} ${arguments_.join(" ")} failed (${String(result.status)}): ${
         result.stderr || result.stdout || "no captured output"
       }`,
     );
+    reportGitHubError(error.message);
+    throw error;
   }
   return options.capture ? result.stdout.trim() : "";
+}
+
+function reportGitHubError(message) {
+  if (process.env.GITHUB_ACTIONS !== "true") return;
+  const escaped = message
+    .slice(-6000)
+    .replaceAll("%", "%25")
+    .replaceAll("\r", "%0D")
+    .replaceAll("\n", "%0A");
+  process.stderr.write(`::error title=PatchRace platform gate::${escaped}\n`);
 }
 
 function parseVersion(value, label) {
