@@ -12,6 +12,7 @@ export interface BudgetConfig {
 export interface AdapterConfig {
   readonly kind: string;
   readonly executable: string;
+  readonly args?: readonly string[];
   readonly execution?: string;
   readonly version?: string;
   readonly metadata?: Readonly<Record<string, unknown>>;
@@ -163,6 +164,10 @@ export const suiteConfigSchema = {
         properties: {
           kind: { type: "string", minLength: 1 },
           executable: { type: "string", minLength: 1 },
+          args: {
+            type: "array",
+            items: { type: "string" },
+          },
           execution: { type: "string", minLength: 1 },
           version: { type: "string", minLength: 1 },
           metadata,

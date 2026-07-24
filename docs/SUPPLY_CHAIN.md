@@ -12,7 +12,9 @@ Last updated: 2026-07-23
 - Pull requests receive GitHub dependency review with high-severity and selected copyleft-license denial.
 - Scheduled/branch CI runs `pnpm audit --audit-level high` and validates a machine-readable production license inventory.
 - Dependabot opens bounded weekly npm and GitHub Actions updates; sensitive dependency classes are reviewed rather than auto-merged.
-- `pnpm release:pack` creates local inspectable tarballs without registry publication. Publishing credentials and provenance signing belong only in a later protected release job.
+- `pnpm release:pack` creates local inspectable tarballs without registry
+  publication. Only the protected `release.yml` environment can publish those
+  audited bytes; it has OIDC provenance permission and no checkout credential.
 
 ## Review policy
 
@@ -32,6 +34,11 @@ source-map privacy, secret/path markers, CLI bin metadata, and provenance
 configuration. A separate network gate compares production integrity/license
 metadata with npm and reruns the high-severity advisory query.
 
-The source-only GitHub preview does not publish packages to npm. Namespace
-ownership, protected OIDC publication, registry attestations, and
-post-publication installation must be verified before any future npm release.
+The protected workflow publishes the audited tarballs in dependency order,
+downloads every registry tarball, compares its SHA-256 with the local release
+audit, verifies registry integrity metadata, installs the exact `patchrace`
+version into a clean global consumer, and only then creates the GitHub release.
+The first namespace bootstrap uses a protected granular npm token because npm
+trusted-publisher configuration requires an existing package. After bootstrap,
+each package is bound to `release.yml` through npm trusted publishing and the
+long-lived bootstrap secret is removed.

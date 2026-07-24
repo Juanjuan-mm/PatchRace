@@ -1,5 +1,17 @@
 # @patchrace/optimizer
 
+## 0.1.0
+
+### Patch Changes
+
+- Graduate PatchRace to its first registry-ready stable release: add protected
+  npm/GitHub publication with audited tarball verification, support Node 26 and
+  the release-gated Windows/macOS Intel/Ubuntu 22 platform lanes, and allow an
+  explicit executable argument prefix for portable script-backed Agent CLIs.
+- Updated dependencies
+  - @patchrace/contracts@0.1.0
+  - @patchrace/diagnosis@0.1.0
+
 ## 0.1.0-rc.2
 
 ### Patch Changes

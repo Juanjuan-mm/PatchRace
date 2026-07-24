@@ -114,7 +114,7 @@ const publicPackagePaths = files.filter((path) =>
 );
 for (const path of publicPackagePaths) {
   const manifest = JSON.parse(await readFile(resolve(root, path), "utf8"));
-  if (manifest.version !== "0.1.0-rc.2")
+  if (manifest.version !== "0.1.0")
     throw new Error(`${path} has unexpected version ${manifest.version}.`);
 }
 if (publicPackagePaths.length !== 9)
@@ -123,8 +123,8 @@ if (publicPackagePaths.length !== 9)
   );
 
 const readme = await readFile(resolve(root, "README.md"), "utf8");
-if (!readme.includes("`v0.1.0-rc.2`"))
-  throw new Error("README does not identify v0.1.0-rc.2.");
+if (!readme.includes("`v0.1.0`"))
+  throw new Error("README does not identify v0.1.0.");
 
 process.stdout.write(
   `${JSON.stringify(

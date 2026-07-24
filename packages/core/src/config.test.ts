@@ -33,6 +33,7 @@ adapters:
   local:
     kind: fixture
     executable: node
+    args: [fixture-agent.mjs]
 variants:
   baseline:
     adapter: local
@@ -58,6 +59,9 @@ describe("loadSuiteConfig", () => {
       repeat: 1,
       budgets: { maxTrials: 30 },
     });
+    expect(loaded.config.adapters["local"]?.args).toEqual([
+      "fixture-agent.mjs",
+    ]);
     const canonicalRoot = await realpath(root);
     expect(loaded.paths).toEqual({
       projectRoot: canonicalRoot,

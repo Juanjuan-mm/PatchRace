@@ -12,10 +12,11 @@ before speed or cost, preserves inspectable evidence, diagnoses observable
 workflow differences, and stages project-local Pi improvements for explicit
 review and held-out validation.
 
-## Preview status
+## Stable status
 
-The current version is `v0.1.0-rc.2`, a source-only GitHub preview. It is not
-published to npm and is not a stable release.
+The current version is `v0.1.0`, the first stable npm and GitHub release.
+Ordinary users can run `npx --yes patchrace@0.1.0` or install the CLI globally;
+no source checkout, Corepack, pnpm, TypeScript, or local build is required.
 
 The implementation has passed deterministic local, platform, compatibility,
 chaos, performance, security, privacy, documentation, package-content, and
@@ -61,39 +62,28 @@ deterministic grading → comparison report → evidence-linked diagnosis
 
 Prerequisites:
 
-- macOS 15+ on Apple silicon, or Ubuntu 24.04 on arm64/x64;
-- Node `22.22.0+` on the Node 22 line, or Node 24;
+- a release-gated macOS 15+, Ubuntu 22.04/24.04, or Windows 11/Server 2025
+  environment;
+- Node `22.22.0+`, Node 24, or Node 26;
 - Git `2.39.0+`;
-- Corepack with the repository-pinned pnpm `10.34.5`.
 
-From a source checkout:
-
-```bash
-corepack pnpm install --frozen-lockfile
-corepack pnpm docs:quickstart
-```
-
-The quickstart builds PatchRace, creates a temporary repository, and completes:
-
-```text
-init → doctor → two-variant race → report → diagnose
-     → cleanup preview → cleanup confirmation
-```
-
-It uses deterministic local fixture adapters, spends no model/API quota, and
-retains an inspectable report under `.artifacts/quickstart/`. The command
-neither reads vendor credentials nor changes global Pi configuration.
-
-Run the development CLI directly:
+Install and inspect the exact stable CLI:
 
 ```bash
-corepack pnpm build
-node packages/cli/dist/main.js --version
-node packages/cli/dist/main.js --help
+npx --yes patchrace@0.1.0 --version
+npx --yes patchrace@0.1.0 --help
 ```
 
-See the [installation and five-minute quickstart](docs/INSTALLATION.md) before
-using a real repository.
+For regular use:
+
+```bash
+npm install --global patchrace@0.1.0
+patchrace init
+```
+
+`init` is provider-free and writes only a review-required project-local suite.
+See the [installation and quickstart](docs/INSTALLATION.md) before using a real
+repository.
 
 ## Use it on a real repository
 
@@ -116,17 +106,20 @@ own configuration and terms.
 
 ## Evidence and limits
 
-The release candidate currently has:
+The stable release currently has:
 
 - 55 deterministic CLI dogfood runs across 10 tasks and all three adapters;
 - 50 expected passes and 5 classified Agent failures;
 - 10 interruption/cleanup scenarios with no orphaned owned worktrees;
-- 75 test files and 246 tests;
-- clean macOS and Ubuntu arm64/x64 evidence on Node 22 and 24;
+- 75 test files and 247 tests;
+- an 18-cell macOS arm64/x64, Ubuntu 22.04/24.04 arm64/x64, and Windows x64
+  package/CLI matrix on Node 22, 24, and 26;
 - three public-safe realistic examples: TypeScript, Python, and POSIX shell;
 - 18/18 correct high-confidence diagnoses on the maintained 21-case set;
 - a real Pi `0.81.1` + DeepSeek Flash run that passed every deterministic gate
   within a 4,096-token and $0.05 ceiling;
+- a fail-closed equal-task live parity harness for Pi, Claude Code, and Codex
+  on the public PatchRace TypeScript monorepo;
 - no known unresolved critical/high security or privacy finding.
 
 This evidence validates the local mechanics and maintained fixtures. It does
@@ -147,7 +140,7 @@ transferable Pi improvement across arbitrary repositories.
 - [Contributing a grader](docs/CONTRIBUTING_GRADERS.md)
 - [Verification evidence](docs/VERIFICATION.md)
 - [Live-provider end-to-end check](docs/LIVE_E2E.md)
-- [Release notes](docs/releases/v0.1.0-rc.2.md)
+- [Release notes](docs/releases/v0.1.0.md)
 
 ## Contributing and security
 

@@ -4,7 +4,12 @@ Last updated: 2026-07-22
 
 ## Supported environment
 
-PatchRace uses strict ESM TypeScript 6 and pnpm 10 on Node 22/24 LTS. The root `packageManager` field pins pnpm with registry integrity, `.node-version` selects the minimum development line, and CI exercises both supported Node lines on explicit `macos-15` and `ubuntu-24.04` runners. The executed matrix and limitations are recorded in [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md).
+PatchRace uses strict ESM TypeScript 6 and pnpm 10 on Node 22/24 LTS and Node
+26 Current. The root `packageManager` field pins pnpm with registry integrity,
+`.node-version` selects the minimum development line, and CI exercises all
+three supported Node lines across explicit macOS arm64/x64, Ubuntu arm64/x64,
+and Windows x64 runners. The executed 18-cell matrix and limitations are
+recorded in [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md).
 
 ## Commands
 

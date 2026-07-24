@@ -55,7 +55,7 @@ for (const { path, value } of manifests) {
   assert(
     value.license === "Apache-2.0" &&
       value.type === "module" &&
-      value.engines?.node === ">=22.22.0 <25" &&
+      value.engines?.node === ">=22.22.0 <27" &&
       value.publishConfig?.access === "public" &&
       value.publishConfig?.provenance === true,
     `${path} release metadata drifted`,
@@ -88,6 +88,7 @@ assert(
 for (const workflow of [
   ".github/workflows/ci.yml",
   ".github/workflows/supply-chain.yml",
+  ".github/workflows/release.yml",
 ]) {
   const source = read(workflow);
   const actionUses = [...source.matchAll(/uses:\s+[^@\s]+@([^\s#]+)/gu)];
@@ -140,12 +141,13 @@ const report = {
   productionLicenseIds,
   noticeRequired: false,
   installLifecycleScripts: 0,
-  shaPinnedWorkflows: 2,
+  shaPinnedWorkflows: 3,
   fixedReleaseGroupPackages: manifests.length,
   dependencyUpdateEcosystems: ["npm", "github-actions"],
   tarballs: packReport.packages,
   published: false,
-  publicationDeferred: true,
+  publicationConfigured: true,
+  publicationDeferred: false,
   signedProvenanceDeferred: true,
 };
 writeFileSync(

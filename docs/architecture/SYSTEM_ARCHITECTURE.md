@@ -189,12 +189,13 @@ Planning is deterministic. Worktree setup and cleanup for one repository are ser
 
 ## Deployment model
 
-The current preview ships as a source-distributed Node.js CLI for supported
-macOS and Linux. It uses the user's Git and locally installed/authenticated Pi,
-Claude Code, and Codex. No daemon, database, account, container, inbound port,
-or hosted PatchRace service is required. Static reports have no remote scripts
-and open directly from disk. The Pi package invokes the same core library; it
-does not duplicate execution state.
+The stable release ships as an npm-distributed Node.js CLI for supported macOS,
+Ubuntu, and Windows hosts. It uses the user's Git and locally
+installed/authenticated Pi, Claude Code, and Codex. No daemon, database,
+PatchRace account, container, inbound port, source build, or hosted PatchRace
+service is required. Static reports have no remote scripts and open directly
+from disk. The Pi package invokes the same core library; it does not duplicate
+execution state.
 
 ## Security and privacy consequences
 

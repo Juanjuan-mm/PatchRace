@@ -1,6 +1,6 @@
 {
   "name": "pi-patchrace",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0",
   "description": "Thin Pi-native integration boundary for PatchRace",
   "keywords": [
     "pi-package",
@@ -20,7 +20,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=22.22.0 <25"
+    "node": ">=22.22.0 <27"
   },
   "exports": {
     ".": {

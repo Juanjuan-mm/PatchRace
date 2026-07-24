@@ -2,9 +2,9 @@
 
 ## Supported version
 
-`v0.1.0-rc.2` is the only currently supported preview. It is source-only and
-pre-stable; security fixes may require upgrading to a newer preview rather than
-backporting.
+`v0.1.0` is the currently supported stable npm/GitHub release. Security fixes
+are delivered on the latest stable patch line; older prereleases are
+unsupported.
 
 ## Report privately
 

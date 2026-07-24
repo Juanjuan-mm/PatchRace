@@ -20,6 +20,7 @@ import {
   type DiagnosisReportCaseV1,
   type GapVariantIdentityV1,
   type JsonValue,
+  type NormalizedSuiteConfig,
   type PatchComparisonV1,
   type RaceExecutionV1,
   type RacePlanV1,
@@ -81,6 +82,15 @@ import { TerminalProgressView } from "./terminal.js";
 
 function usage(code: string, message: string, path: string): never {
   throw new PatchRaceError({ code, category: "USAGE", message, path });
+}
+
+function agentEnvironmentNames(config: NormalizedSuiteConfig): string[] {
+  return [
+    ...new Set([
+      ...config.defaults.environment.inherit,
+      ...config.defaults.environment.pass,
+    ]),
+  ].sort();
 }
 
 function reportRedactionProfile(
@@ -456,6 +466,7 @@ export class ComparisonCommandService implements CommandService {
       ),
     );
     const config = loadedConfig.config;
+    const inheritedAgentEnvironment = agentEnvironmentNames(config);
     const resumeId =
       request.command === "run" && typeof request.options["resume"] === "string"
         ? request.options["resume"]
@@ -545,6 +556,7 @@ export class ComparisonCommandService implements CommandService {
       {
         adapter: AgentAdapter;
         executable: string;
+        executableArgs: readonly string[];
         probe: Awaited<ReturnType<AgentAdapter["probe"]>>;
       }
     >();
@@ -562,8 +574,11 @@ export class ComparisonCommandService implements CommandService {
         const probe = await adapter.probe(
           {
             executable: declaration.executable,
+            ...(declaration.args === undefined
+              ? {}
+              : { executableArgs: declaration.args }),
             cwd: loadedConfig.paths.projectRoot,
-            inheritEnvironment: config.defaults.environment.inherit,
+            inheritEnvironment: inheritedAgentEnvironment,
           },
           new AbortController().signal,
         );
@@ -582,6 +597,7 @@ export class ComparisonCommandService implements CommandService {
         adapterEntries.set(variant.adapter, {
           adapter,
           executable: declaration.executable,
+          executableArgs: declaration.args ?? [],
           probe,
         });
       }
@@ -610,10 +626,7 @@ export class ComparisonCommandService implements CommandService {
           model: variant.model,
           harness: variant.harness,
           workflow: variant.workflow,
-          environmentNames: [
-            ...config.defaults.environment.inherit,
-            ...config.defaults.environment.pass,
-          ],
+          environmentNames: [...inheritedAgentEnvironment],
         };
       }),
       repeat:
@@ -957,6 +970,7 @@ export class ComparisonCommandService implements CommandService {
           const prepared = await adapterEntry.adapter.prepare(
             {
               executable: adapterEntry.executable,
+              executableArgs: adapterEntry.executableArgs,
               trialId: trial.trialId,
               taskHash: trial.taskHash,
               variantHash: trial.variantHash,
@@ -968,7 +982,7 @@ export class ComparisonCommandService implements CommandService {
                   ? "read-only"
                   : "workspace-write",
               approvalMode: "never",
-              inheritEnvironment: config.defaults.environment.inherit,
+              inheritEnvironment: inheritedAgentEnvironment,
               budgets: {
                 wallMs: loaded.task.budgets.trialSeconds * 1000,
                 maxOutputBytes:

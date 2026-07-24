@@ -47,3 +47,94 @@ This was one deliberately tiny paid run, not a model-quality benchmark or a
 pricing guarantee. Exact-value scanning cannot prove removal of unknown,
 encoded, transformed, or model-reproduced secrets. Agent and repository
 processes still execute with the invoking user's host authority.
+
+## Stable-release parity profile
+
+The stable release adds a reproducible, fail-closed parity harness for Pi,
+Claude Code, and Codex on the same nontrivial repository task. The task starts
+from the public `v0.1.0-rc.2` PatchRace TypeScript monorepo and asks each Agent
+to implement complete Node 26 support across package metadata, runtime doctor
+behavior, platform verification, CI, documentation, and regression coverage.
+This is a seeded regression on a real repository, not an upstream issue
+benchmark.
+
+Preparation is provider-free:
+
+```bash
+corepack pnpm qa:live:prepare
+```
+
+The command creates a no-hardlink local clone under ignored
+`.artifacts/live-e2e/`, freezes the exact baseline commit, writes a hashed
+instruction and public verifier, and prints a `prepared.json` path. It makes no
+Agent or provider call.
+
+Execution requires a separate local authorization JSON. It must set
+`approved: true`, an unexpired `expiresAt`, `taskProfile:
+"patchrace-node26-v1"`, exact repeat/concurrency, aggregate wall/token/cost
+ceilings, and exactly one Pi, Claude Code, and Codex variant. Every variant
+must name its executable, provider, and model. Credential values never belong
+in this file; only explicitly approved child-environment names may be listed.
+
+The shape is:
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "approved": true,
+  "approvedAt": "2026-07-24T00:00:00Z",
+  "expiresAt": "2026-07-25T00:00:00Z",
+  "taskProfile": "patchrace-node26-v1",
+  "repeat": 1,
+  "concurrency": 1,
+  "maxWallSeconds": 3600,
+  "maxTokens": 98304,
+  "maxCostUsd": 10,
+  "environmentNames": [],
+  "variants": [
+    {
+      "id": "pi-approved",
+      "adapter": "pi",
+      "executable": "pi",
+      "provider": "approved-provider",
+      "model": "approved-model"
+    },
+    {
+      "id": "claude-approved",
+      "adapter": "claude-code",
+      "executable": "claude",
+      "provider": "approved-provider",
+      "model": "approved-model"
+    },
+    {
+      "id": "codex-approved",
+      "adapter": "codex",
+      "executable": "codex",
+      "provider": "approved-provider",
+      "model": "approved-model"
+    }
+  ]
+}
+```
+
+Run only after reviewing those exact values:
+
+```bash
+corepack pnpm qa:live -- \
+  --prepared .artifacts/live-e2e/<workspace>/prepared.json \
+  --authorization .artifacts/live-e2e/authorization.json \
+  --confirm-paid-run
+```
+
+Omitting any required field or the final confirmation stops before doctor or
+Agent invocation. The runner executes all three variants through the same
+PatchRace race, deterministic public verifiers, report, and cleanup preview.
+It writes a bounded summary containing adapter/model provenance, outcomes,
+hard-gate status, observable usage availability, duration, footprint, and the
+authorization ceilings. Raw evidence stays local-sensitive and is never
+uploaded automatically.
+
+Codex cost remains unavailable in the supported JSON stream, so PatchRace does
+not falsely claim aggregate monetary enforcement. The operator's provider
+ceiling is still mandatory authorization; token and wall ceilings are enforced
+by PatchRace where the adapters expose the required signals.

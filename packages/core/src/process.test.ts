@@ -59,7 +59,12 @@ describe("runProcess", () => {
       status: "budget_exhausted",
       terminationReason: "timeout",
     });
-    expect(result.signal).not.toBeNull();
+    if (process.platform === "win32") {
+      expect(result.signal).toBeNull();
+      expect(result.exitCode).not.toBe(0);
+    } else {
+      expect(result.signal).not.toBeNull();
+    }
     expect(await readFile(join(directory, "unrelated.txt"), "utf8")).toBe(
       "preserve\n",
     );

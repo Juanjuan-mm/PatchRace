@@ -26,6 +26,9 @@ assert(
     audit.installedDevelopmentPackages >= 240 &&
     audit.noticeRequired === false &&
     audit.installLifecycleScripts === 0 &&
+    audit.shaPinnedWorkflows === 3 &&
+    audit.publicationConfigured === true &&
+    audit.publicationDeferred === false &&
     audit.tarballs.length === 9 &&
     audit.published === false,
   "local release audit summary is incomplete",

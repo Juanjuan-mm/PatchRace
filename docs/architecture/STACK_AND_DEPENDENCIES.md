@@ -16,14 +16,18 @@ critical Python-only library is required.
 
 ## Runtime and language
 
-- Runtime support: latest patched Node `22.x` and `24.x` LTS on supported
-  macOS/Linux; engine range `>=22.22.0 <25`.
-- CI matrix: explicit `macos-15` and `ubuntu-24.04` runners with one current patch from Node 22 and Node 24. Node 26 is not supported until it reaches LTS and passes compatibility/packaging tests.
+- Runtime support: latest patched Node `22.x` and `24.x` LTS plus Node `26.x`
+  Current on supported macOS/Linux/Windows; engine range `>=22.22.0 <27`.
+- CI matrix: the explicit 18-cell macOS arm64/x64, Ubuntu 22.04/24.04
+  arm64/x64, and Windows x64 cross product with Node 22, 24, and 26.
 - Language: TypeScript `6.0.x`, `strict`, ESM, `module`/`moduleResolution: NodeNext`, explicit `rootDir`, explicit `types`, declaration emit for public packages, and a fixed ES target supported by Node 22 (no floating compiler defaults).
 - JavaScript output runs without a loader. No `tsx`/`ts-node` dependency is required for installed users.
 - Public contracts use JSON Schema plus generated/hand-maintained TypeScript types; schema files are release artifacts and the wire-format source of truth.
 
-Node 22 and 24 are both active LTS lines in July 2026; Node 20 is EOL. Node 24 remains supported through April 2028. TypeScript 6.0 is a greenfield-compatible release but changes defaults, so PatchRace pins all relevant compiler options rather than relying on them. Sources: [Node release status](https://nodejs.org/en/about/previous-releases), [Node 22 LTS release](https://nodejs.org/en/blog/release/v22.22.0), [Node 22→24 migration](https://nodejs.org/en/blog/migrations/v22-to-v24), [TypeScript 6.0 notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html).
+Node 22 is Maintenance LTS, Node 24 is Active LTS, and Node 26 is Current in
+July 2026; Node 20/23/25 are EOL. Node 24 remains supported through April
+2028. TypeScript 6.0 changes defaults, so PatchRace pins all relevant compiler
+options rather than relying on them. Sources: [Node release status](https://nodejs.org/en/about/previous-releases), [Node release schedule](https://github.com/nodejs/Release), [TypeScript 6.0 notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html).
 
 ## Workspace and package manager
 

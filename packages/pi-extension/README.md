@@ -6,6 +6,16 @@ surface. The extension never starts another Pi session: it launches the local
 machine output, and restores its last durable run pointer from Pi session
 entries.
 
+## Stable installation
+
+Install the published extension only for a trusted project:
+
+```bash
+pi install npm:pi-patchrace@0.1.0
+```
+
+The `patchrace@0.1.0` CLI must also be available on PATH.
+
 ## Project-local development
 
 Build the workspace, then install this package only for the trusted project:

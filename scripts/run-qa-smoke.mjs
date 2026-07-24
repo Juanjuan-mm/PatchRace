@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import {
-  chmod,
   cp,
   mkdir,
   mkdtemp,
@@ -51,6 +50,7 @@ function productEnvironment() {
   ]
     .filter(Boolean)
     .join(delimiter);
+  environment["PATCHRACE_QA_PASSTHROUGH"] = "present";
   return environment;
 }
 
@@ -105,8 +105,8 @@ async function packedCommand() {
     },
   );
   return {
-    executable: join(installRoot, "node_modules", ".bin", "patchrace"),
-    prefix: [],
+    executable: process.execPath,
+    prefix: [join(installRoot, "node_modules", "patchrace", "dist", "main.js")],
   };
 }
 
@@ -129,12 +129,14 @@ import { writeFile } from "node:fs/promises";
 if (process.argv.includes("--version")) {
   process.stdout.write("0.81.1\\n");
 } else {
+  if (process.env.PATCHRACE_QA_PASSTHROUGH !== "present") {
+    throw new Error("explicit pass-through environment value is missing");
+  }
   await writeFile("target.txt", "changed\\n");
   process.stdout.write(JSON.stringify({ type: "agent_end", message: "done" }) + "\\n");
 }
 `,
   );
-  await chmod(agent, 0o755);
   await writeFile(join(projectRoot, ".gitignore"), ".patchrace/\n");
   await writeFile(join(projectRoot, "target.txt"), "original\n");
   await writeFile(join(projectRoot, "sentinel.txt"), "preserve\n");
@@ -231,8 +233,15 @@ if (await readFile("target.txt", "utf8") !== "changed\\n") process.exit(1);
           maxCostUsd: null,
           diskMiB: 64,
         },
+        environment: {
+          inherit: ["PATH", "LANG", "LC_ALL"],
+          pass: ["PATCHRACE_QA_PASSTHROUGH"],
+          redact: [],
+        },
       },
-      adapters: { pi: { kind: "pi", executable: agent } },
+      adapters: {
+        pi: { kind: "pi", executable: process.execPath, args: [agent] },
+      },
       variants: {
         "pi-baseline": {
           adapter: "pi",

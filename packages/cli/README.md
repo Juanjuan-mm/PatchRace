@@ -1,5 +1,9 @@
 # patchrace
 
+Install the stable CLI with `npm install --global patchrace@0.1.0`, or run it
+once with `npx --yes patchrace@0.1.0 --help`. Installed users need Node and
+Git, but not a source checkout, Corepack, pnpm, TypeScript, or a local build.
+
 PatchRace CLI. The stable v0.1 command surface routes `doctor` and explicit
 dry-run/confirmed `clean` operations to the shared core. `init` creates and verifies
 a review-required manual suite without invoking an Agent. `mine` reads local Git

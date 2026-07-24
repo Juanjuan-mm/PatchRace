@@ -67,7 +67,7 @@ arbitrary repositories.
 
 ## Requirements and safety
 
-- Node `>=22.22.0 <25`, Git, Corepack/pnpm, Python 3, and standard POSIX
+- Node `>=22.22.0 <27`, Git, Corepack/pnpm, Python 3, and standard POSIX
   `/bin/sh`/`awk`.
 - No provider, credential store, Keychain, telemetry, upload, package install,
   network access, paid call, publication, commit to the user's repository,

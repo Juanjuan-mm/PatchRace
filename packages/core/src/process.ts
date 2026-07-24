@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { realpath } from "node:fs/promises";
 
 import { PatchRaceError } from "@patchrace/contracts";
@@ -118,8 +118,17 @@ function signalOwnedProcess(child: ChildProcess, signal: NodeJS.Signals): void {
   )
     return;
   try {
-    if (process.platform !== "win32") process.kill(-child.pid, signal);
-    else child.kill(signal);
+    if (process.platform !== "win32") {
+      process.kill(-child.pid, signal);
+    } else {
+      // Windows has no POSIX process groups. taskkill's explicit PID tree is
+      // the platform-equivalent ownership boundary; /F is required because a
+      // console CTRL signal cannot be scoped safely to an arbitrary child tree.
+      spawnSync("taskkill.exe", ["/PID", String(child.pid), "/T", "/F"], {
+        stdio: "ignore",
+        windowsHide: true,
+      });
+    }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ESRCH") throw error;
   }
@@ -176,11 +185,13 @@ export async function runProcess(
     terminationRequested = true;
     termination.reason = reason;
     signalOwnedProcess(child, "SIGTERM");
-    forceTimer = setTimeout(
-      () => signalOwnedProcess(child, "SIGKILL"),
-      request.terminationGraceMs ?? 2000,
-    );
-    forceTimer.unref();
+    if (process.platform !== "win32") {
+      forceTimer = setTimeout(
+        () => signalOwnedProcess(child, "SIGKILL"),
+        request.terminationGraceMs ?? 2000,
+      );
+      forceTimer.unref();
+    }
   };
   const onAbort = (): void => terminate("cancelled");
   request.signal?.addEventListener("abort", onAbort, { once: true });

@@ -78,20 +78,20 @@ function includeInCleanCopy(source) {
 
 function validateEnvironment() {
   const operatingSystem = platform();
-  if (!["darwin", "linux"].includes(operatingSystem)) {
+  if (!["darwin", "linux", "win32"].includes(operatingSystem)) {
     throw new Error(
-      `PatchRace supports only macOS and Linux; received '${operatingSystem}'.`,
+      `PatchRace supports macOS, Linux, and Windows; received '${operatingSystem}'.`,
     );
   }
 
   const nodeVersion = process.version.slice(1);
   const parsedNode = parseVersion(nodeVersion, "Node");
   if (
-    ![22, 24].includes(parsedNode[0]) ||
+    ![22, 24, 26].includes(parsedNode[0]) ||
     (parsedNode[0] === 22 && compareVersions(parsedNode, [22, 22, 0]) < 0)
   ) {
     throw new Error(
-      `PatchRace requires Node >=22.22.0 on major 22 or 24; received ${nodeVersion}.`,
+      `PatchRace requires Node >=22.22.0 on major 22, 24, or 26; received ${nodeVersion}.`,
     );
   }
 

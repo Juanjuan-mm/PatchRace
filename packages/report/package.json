@@ -1,6 +1,6 @@
 {
   "name": "@patchrace/report",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0",
   "description": "PatchRace report model and static renderer foundations",
   "license": "Apache-2.0",
   "repository": {
@@ -14,7 +14,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=22.22.0 <25"
+    "node": ">=22.22.0 <27"
   },
   "exports": {
     ".": {

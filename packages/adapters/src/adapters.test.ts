@@ -240,6 +240,42 @@ describe("shared adapter contract", () => {
     }
   }
 
+  it("supports explicit executable prefix arguments for cross-platform script CLIs", async () => {
+    const files = await fixture();
+    const adapter = new PiCliAdapter();
+    const executableArgs = [files.executable];
+    const probe = await adapter.probe(
+      {
+        executable: process.execPath,
+        executableArgs,
+        cwd: files.root,
+        environment: { FIXTURE_KIND: "pi", FIXTURE_VERSION: "0.81.1" },
+      },
+      new AbortController().signal,
+    );
+    expect(probe).toMatchObject({
+      availability: "degraded",
+      version: { normalized: "0.81.1", supported: true },
+    });
+    const input = prepareInput(
+      "pi",
+      files.root,
+      process.execPath,
+      "Complete the prefixed fixture",
+    );
+    const prepared = await adapter.prepare(
+      { ...input, executableArgs },
+      new AbortController().signal,
+    );
+    expect(prepared.args[0]).toBe(files.executable);
+    const result = await adapter.run(
+      prepared,
+      new MemoryAdapterSink(),
+      new AbortController().signal,
+    );
+    expect(result.status).toBe("completed");
+  });
+
   it("persists raw chunks before parsed records and retains malformed output", async () => {
     const files = await fixture();
     const adapter = new CodexAdapter();

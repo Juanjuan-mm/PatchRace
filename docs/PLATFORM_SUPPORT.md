@@ -1,72 +1,82 @@
 # Platform Support Matrix
 
-Status: current v0.1 support policy
-Last updated: 2026-07-23
+Status: stable v0.1 release policy
+Last updated: 2026-07-24
 
-## Supported v0.1 baseline
+## Supported baseline
 
-PatchRace supports these release-gated environments:
+Every combination in this table is release-gated:
 
-| Operating system | Architecture | Runtime | Git | Package install |
-|---|---|---|---|---|
-| macOS 15 or newer | Apple silicon (`arm64`) | Node `22.22.0+` or Node `24.x` | `2.39.0+` | npm for released packages; pinned pnpm `10.34.5` for a source checkout |
-| Ubuntu 24.04 LTS | `x64` | Node `22.22.0+` or Node `24.x` | `2.39.0+` | npm for released packages; pinned pnpm `10.34.5` for a source checkout |
-| Ubuntu 24.04 LTS | `arm64` | Node `22.22.0+` or Node `24.x` | `2.39.0+` | npm for released packages; pinned pnpm `10.34.5` for a source checkout |
+| Operating system | Architecture | Runtime | Git |
+|---|---|---|---|
+| macOS 15 or newer | Apple silicon (`arm64`) | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
+| macOS 15 or newer | Intel (`x64`) | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
+| Ubuntu 22.04 LTS | `x64` | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
+| Ubuntu 24.04 LTS | `x64` | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
+| Ubuntu 24.04 LTS | `arm64` | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
+| Windows 11 / Server 2025 | `x64` | Node `22.22.0+`, `24.x`, or `26.x` | `2.39.0+` |
 
-The release matrix uses explicit `macos-15` and `ubuntu-24.04` GitHub-hosted
-runner labels rather than floating `*-latest` labels. GitHub documents both
-labels in its
-[runner image inventory](https://github.com/actions/runner-images#available-images).
-The matrix installs exact Node lines through `actions/setup-node`, so the
-runner's preinstalled default Node version is not evidence.
+That is an 18-cell cross product. The workflow uses explicit
+`ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-24.04-arm`, `macos-15`,
+`macos-15-intel`, and `windows-2025` GitHub-hosted runner labels rather than
+floating `*-latest` aliases. Node 22 is Maintenance LTS, Node 24 is Active LTS,
+and Node 26 is Current as of this release; Node 20, 23, and 25 are EOL.
+
+Ordinary users install with npm. The pinned Corepack `0.35.0` and pnpm
+`10.34.5` toolchain applies only to source development and release
+verification.
 
 ## Per-cell acceptance
 
-Every supported OS/Node cell must complete the same sequence:
+Every one of the 18 cells must complete the same sequence:
 
-1. install the committed dependency graph with
-   `pnpm install --frozen-lockfile`;
-2. run `pnpm check`;
-3. dry-pack and inspect all nine public packages;
-4. install those tarballs as a clean consumer with lifecycle scripts disabled;
-5. run the compiled CLI through init → doctor → two-variant race → report →
-   diagnose → cleanup preview/confirm;
-6. prove the primary worktree and unrelated state remain unchanged.
+1. install pinned Corepack and select integrity-pinned pnpm;
+2. install the committed dependency graph with a frozen lockfile;
+3. run formatting, lint, strict type checking, deterministic tests, fixtures,
+   schema generation, and compiled CLI smoke;
+4. dry-pack and inspect all nine public packages;
+5. install those tarballs as a clean npm consumer with lifecycle scripts
+   disabled;
+6. run init → doctor → two-variant race → report → diagnose → cleanup
+   preview/confirmation;
+7. prove the primary worktree and unrelated state remain unchanged.
 
-`pnpm qa:platform` reproduces the sequence in an isolated clean source copy.
-CI uses `pnpm qa:platform -- --installed-workspace` after its fresh checkout
-and frozen install. Each passing cell emits a machine-readable environment and
-check summary under `.artifacts/qa-platform/`.
+`pnpm qa:platform` reproduces the cell in an isolated clean source copy. CI
+uses `pnpm qa:platform -- --installed-workspace` after its fresh checkout and
+frozen install. Each cell emits a machine-readable environment/check summary
+under `.artifacts/qa-platform/`.
 
-## Evidence
+Windows uses an explicit executable plus argument prefix for script-backed test
+CLIs. Timed-out Windows Agent processes are terminated through the exact child
+PID tree; Unix hosts use a dedicated process group. The same descendant and
+unrelated-process chaos regression runs on every platform.
 
-The checked source has passed the supported macOS and Ubuntu, arm64 and x64,
-Node 22 and 24 combinations. The public
-[CI workflow](https://github.com/songjinmiao/PatchRace/actions/workflows/ci.yml)
-repeats the GitHub-hosted macOS arm64 and Ubuntu x64 cells on every main-branch
-push and pull request. Hosted evidence is point-in-time; runtime, image,
-dependency, or vendor drift requires fresh CI.
+## Evidence boundary
+
+The public [CI workflow](https://github.com/songjinmiao/PatchRace/actions/workflows/ci.yml)
+is the source of truth for the current 18-cell result. A stable tag may be sent
+to the protected release workflow only after this matrix is green at that
+exact commit. Hosted evidence is point-in-time: runner images, Node, Git, npm,
+and vendor CLIs can drift and require fresh execution.
+
+The matrix establishes supported PatchRace mechanics, package installation,
+and deterministic fixture behavior. It does not establish that every
+repository command or third-party Agent CLI behaves identically across hosts.
 
 ## Explicit limitations
 
-- Windows, macOS Intel, Linux distributions other than Ubuntu 24.04, Node 20,
-  Node 26, alternative JavaScript runtimes, WSL, and container-specific
-  behavior are not release-gated for v0.1.
-- Worktree isolation does not sandbox the filesystem, processes, credentials,
-  or network. Repository setup, verifier, and Agent commands execute with the
-  invoking user's host authority.
-- PatchRace does not install or authenticate Pi, Claude Code, or Codex. Their
-  executable/version/auth readiness is checked separately by `doctor`.
-- A clean package install requires registry access for public runtime
-  dependencies. PatchRace itself performs no telemetry or artifact upload.
-- Git filesystems with unusual case folding, network mounts, low disk space,
-  or restrictive enterprise process controls may need additional validation.
+- Windows on Arm, macOS older than 15, Linux distributions other than the
+  listed Ubuntu LTS releases, WSL, containers, alternative JavaScript
+  runtimes, and Node 27+ are not release-gated.
+- Task `shellKind` remains explicit. POSIX shell tasks do not become
+  PowerShell-compatible merely because PatchRace itself runs on Windows.
+- Worktree isolation does not sandbox filesystem, process, credential, or
+  network authority.
+- PatchRace does not install or authenticate Pi, Claude Code, or Codex.
+- Unusual case-folding filesystems, network mounts, low disk space, and
+  restrictive enterprise process controls may need additional validation.
 
-## Troubleshooting boundary
-
-An unsupported platform may work, but failures there are best effort until its
-OS/architecture/runtime combination is added to this matrix with the full
-sequence above. A supported-cell failure must include the emitted environment
-summary, failing command, PatchRace version, and whether the source checkout or
-packed-consumer path failed; credentials and raw private traces must not be
-attached.
+An unsupported platform may work on a best-effort basis. A supported-cell
+failure should include only its public-safe environment summary, failing
+command, PatchRace version, and package/source path; never attach credentials
+or raw private Agent traces.

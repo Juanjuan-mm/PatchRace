@@ -84,7 +84,7 @@ async function capture(
   const stderr: Buffer[] = [];
   const result = await runProcess({
     executable,
-    args,
+    args: [...(input.executableArgs ?? []), ...args],
     cwd: input.cwd ?? process.cwd(),
     ...(input.inheritEnvironment === undefined
       ? {}
@@ -347,6 +347,7 @@ export abstract class CliAdapter implements AgentAdapter {
       environmentNames: Object.keys(environment).sort(),
       budgets,
       ...specific,
+      args: [...(input.executableArgs ?? []), ...specific.args],
     };
   }
 

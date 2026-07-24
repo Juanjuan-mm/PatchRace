@@ -32,6 +32,7 @@ function supportedNode(version: string): boolean {
   const patch = Number(match[3]);
   return (
     major === 24 ||
+    major === 26 ||
     (major === 22 && (minor > 22 || (minor === 22 && patch >= 0)))
   );
 }
@@ -111,13 +112,13 @@ export async function inspectEnvironment(options: {
     status: supportedNode(process.version) ? "pass" : "fail",
     summary: supportedNode(process.version)
       ? "Node runtime is supported."
-      : "Node runtime is outside the supported 22.22+/24.x lines.",
+      : "Node runtime is outside the supported 22.22+/24.x/26.x lines.",
     version: process.version,
     ...(supportedNode(process.version)
       ? {}
       : {
           remediation:
-            "Install the latest patched Node 22 or Node 24 LTS release.",
+            "Install the latest patched Node 22/24 LTS or Node 26 Current release.",
         }),
   });
 
@@ -231,16 +232,33 @@ export async function inspectEnvironment(options: {
       });
       continue;
     }
-    const version = await probe(executable, ["--version"], projectRoot);
+    const prefix = adapter.args ?? [];
+    const version = await probe(
+      executable,
+      [...prefix, "--version"],
+      projectRoot,
+    );
     let auth: "ready" | "missing" | "expired" | "unknown" = "unknown";
     if (adapter.kind === "codex")
-      auth = (await probe(executable, ["login", "status"], projectRoot, false))
-        .ok
+      auth = (
+        await probe(
+          executable,
+          [...prefix, "login", "status"],
+          projectRoot,
+          false,
+        )
+      ).ok
         ? "ready"
         : "missing";
     else if (adapter.kind === "claude-code")
-      auth = (await probe(executable, ["auth", "status"], projectRoot, false))
-        .ok
+      auth = (
+        await probe(
+          executable,
+          [...prefix, "auth", "status"],
+          projectRoot,
+          false,
+        )
+      ).ok
         ? "ready"
         : "missing";
     const status: DoctorStatus = !version.ok

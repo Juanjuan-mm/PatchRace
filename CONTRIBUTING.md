@@ -1,11 +1,14 @@
 # Contributing to PatchRace
 
-PatchRace welcomes focused, evidence-backed contributions. `v0.1.0-rc.2` is a
-source-only preview; public contracts may evolve before the stable release.
+PatchRace welcomes focused, evidence-backed contributions. `v0.1.0` is the
+first stable release; public contracts follow the documented compatibility
+policy.
 
 ## Set up a clean checkout
 
-Prerequisites are Git, Corepack, and a supported Node.js release (`>=22.22.0 <25`; CI covers Node 22 and 24 on macOS and Linux).
+Prerequisites are Git, Corepack, and a supported Node.js release
+(`>=22.22.0 <27`; CI covers Node 22, 24, and 26 across macOS, Ubuntu, and
+Windows).
 
 ```bash
 corepack enable
@@ -42,9 +45,9 @@ deterministic Python example.
 Every contributed commit must include a DCO 1.1 `Signed-off-by` trailer (`git commit -s`). Substantial coding-agent assistance must be disclosed in the pull request with the checks a human ran. Ordinary changes require normal review; security, authentication, cleanup, artifact-format, and release changes receive heightened review under `docs/GOVERNANCE.md`.
 
 Changesets version packages and generate package changelogs. Maintainers inspect
-the tarballs from `pnpm release:pack`. The GitHub preview does not publish npm
-packages; any later registry publication uses a separately protected and
-verified workflow.
+the tarballs from `pnpm release:pack`. Registry publication uses only the
+separately protected `release.yml` workflow and verifies the published bytes
+before creating the GitHub release.
 
 ## Security and privacy
 

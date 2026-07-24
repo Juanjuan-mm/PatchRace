@@ -22,6 +22,8 @@ export type AdapterLifecycleState =
 
 export interface ProbeInput {
   readonly executable?: string;
+  /** Arguments placed before the vendor CLI arguments, for example a script path when executable is Node. */
+  readonly executableArgs?: readonly string[];
   readonly cwd?: string;
   readonly inheritEnvironment?: readonly string[];
   /** Values are scoped to probes and are never returned in probe results. */
@@ -78,6 +80,8 @@ export interface AdapterBudgetInput {
 
 export interface PrepareInput {
   readonly executable?: string;
+  /** Arguments placed before the vendor CLI arguments. */
+  readonly executableArgs?: readonly string[];
   readonly trialId: TrialId;
   readonly taskHash: `sha256:${string}`;
   readonly variantHash: `sha256:${string}`;

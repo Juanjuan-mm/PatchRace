@@ -69,11 +69,12 @@ try {
   for (const required of [
     "corepack pnpm install --frozen-lockfile",
     "corepack pnpm docs:quickstart",
+    "npm install --global patchrace@0.1.0",
+    "npx --yes patchrace@0.1.0",
     ".artifacts/quickstart/<run-id>/report.json",
     "not sandbox",
     "does not contact Pi, Claude, Codex",
-    "source-only GitHub preview",
-    "not published to npm",
+    "do not need a PatchRace source checkout",
   ])
     if (!normalizedGuide.includes(required))
       throw new Error(`Installation guide omits '${required}'.`);

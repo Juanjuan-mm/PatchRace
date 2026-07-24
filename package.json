@@ -14,7 +14,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=22.22.0 <25"
+    "node": ">=22.22.0 <27"
   },
   "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
   "scripts": {
@@ -36,6 +36,8 @@
     "qa:chaos": "vitest run packages/core/src/chaos.test.ts packages/core/src/process.test.ts packages/core/src/worktrees.test.ts packages/core/src/recovery.test.ts packages/core/src/cleanup.test.ts packages/core/src/budgets.test.ts packages/core/src/scheduler.test.ts",
     "qa:agents:fixtures": "vitest run packages/adapters/src/adapters.test.ts",
     "qa:agents": "pnpm qa:agents:fixtures && node scripts/verify-agent-cli-compatibility.mjs",
+    "qa:live:prepare": "pnpm build && node scripts/prepare-live-e2e.mjs",
+    "qa:live": "node scripts/run-live-e2e.mjs",
     "qa:performance": "pnpm build && node scripts/benchmark-qa-resources.mjs",
     "qa:security": "vitest run packages/core/src/process.test.ts packages/core/src/logging.test.ts packages/core/src/doctor.test.ts packages/core/src/report-export.test.ts packages/core/src/artifacts.test.ts packages/core/src/cleanup.test.ts packages/core/src/worktrees.test.ts packages/core/src/recovery.test.ts packages/core/src/chaos.test.ts packages/core/src/budgets.test.ts packages/core/src/scheduler.test.ts packages/tasks/src/task.test.ts packages/tasks/src/grader.test.ts packages/tasks/src/assertions.test.ts packages/tasks/src/hidden-verifier.test.ts packages/tasks/src/integrity.test.ts packages/tasks/src/split.test.ts packages/optimizer/src/inventory.test.ts packages/optimizer/src/staging.test.ts packages/optimizer/src/generation.test.ts packages/optimizer/src/recommendations.test.ts packages/optimizer/src/review.test.ts packages/optimizer/src/promotion.test.ts packages/report/src/index.test.ts packages/report/src/formats.test.ts packages/report/src/diagnosis.test.ts packages/report/src/candidate-review.test.ts packages/adapters/src/adapters.test.ts packages/pi-extension/src/bridge.test.ts packages/pi-extension/src/status.test.ts packages/pi-extension/src/compatibility.test.ts packages/pi-extension/src/workflow.test.ts packages/cli/src/comparison-service.test.ts packages/cli/src/candidate-service.test.ts && node scripts/verify-security-review.mjs",
     "qa:privacy": "vitest run packages/core/src/redaction.test.ts packages/core/src/report-export.test.ts packages/core/src/privacy.test.ts packages/core/src/logging.test.ts packages/core/src/doctor.test.ts packages/adapters/src/adapters.test.ts packages/report/src/index.test.ts packages/report/src/formats.test.ts packages/report/src/diagnosis.test.ts packages/report/src/candidate-review.test.ts packages/diagnosis/src/reflection.test.ts packages/optimizer/src/inventory.test.ts packages/optimizer/src/generation.test.ts packages/cli/src/comparison-service.test.ts && node scripts/verify-privacy-review.mjs",
