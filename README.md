@@ -1,7 +1,7 @@
 # PatchRace
 
-[![CI](https://github.com/songjinmiao/PatchRace/actions/workflows/ci.yml/badge.svg)](https://github.com/songjinmiao/PatchRace/actions/workflows/ci.yml)
-[![Supply chain](https://github.com/songjinmiao/PatchRace/actions/workflows/supply-chain.yml/badge.svg)](https://github.com/songjinmiao/PatchRace/actions/workflows/supply-chain.yml)
+[![CI](https://github.com/Juanjuan-mm/PatchRace/actions/workflows/ci.yml/badge.svg)](https://github.com/Juanjuan-mm/PatchRace/actions/workflows/ci.yml)
+[![Supply chain](https://github.com/Juanjuan-mm/PatchRace/actions/workflows/supply-chain.yml/badge.svg)](https://github.com/Juanjuan-mm/PatchRace/actions/workflows/supply-chain.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 > Race coding agents. Distill what wins. Make Pi better.

@@ -46,7 +46,7 @@ To inspect registry identity:
 npm view patchrace@0.1.0 name version license repository dist.integrity
 ```
 
-The repository must be `https://github.com/songjinmiao/PatchRace.git`, the
+The repository must be `https://github.com/Juanjuan-mm/PatchRace.git`, the
 license must be `Apache-2.0`, and `dist.integrity` must be present. Do not
 continue if the registry identity differs.
 
@@ -128,7 +128,7 @@ names every provider, model, task, and aggregate budget. See
 Contributors, not ordinary npm users, need Corepack and the pinned pnpm:
 
 ```bash
-git clone https://github.com/songjinmiao/PatchRace.git
+git clone https://github.com/Juanjuan-mm/PatchRace.git
 cd PatchRace
 npm install --global corepack@0.35.0
 corepack enable

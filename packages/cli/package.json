@@ -5,12 +5,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/songjinmiao/PatchRace.git",
+    "url": "git+https://github.com/Juanjuan-mm/PatchRace.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/songjinmiao/PatchRace#readme",
+  "homepage": "https://github.com/Juanjuan-mm/PatchRace#readme",
   "bugs": {
-    "url": "https://github.com/songjinmiao/PatchRace/issues"
+    "url": "https://github.com/Juanjuan-mm/PatchRace/issues"
   },
   "type": "module",
   "engines": {

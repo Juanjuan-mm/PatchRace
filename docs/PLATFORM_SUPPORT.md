@@ -53,7 +53,7 @@ unrelated-process chaos regression runs on every platform.
 
 ## Evidence boundary
 
-The public [CI workflow](https://github.com/songjinmiao/PatchRace/actions/workflows/ci.yml)
+The public [CI workflow](https://github.com/Juanjuan-mm/PatchRace/actions/workflows/ci.yml)
 is the source of truth for the current 18-cell result. A stable tag may be sent
 to the protected release workflow only after this matrix is green at that
 exact commit. Hosted evidence is point-in-time: runner images, Node, Git, npm,

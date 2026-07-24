@@ -46,7 +46,7 @@ for (const entry of local.packages) {
   );
   assert(
     metadata.repository?.url ===
-      "git+https://github.com/songjinmiao/PatchRace.git",
+      "git+https://github.com/Juanjuan-mm/PatchRace.git",
     `Registry repository mismatch for ${entry.name}.`,
   );
   const tarball = Buffer.from(
