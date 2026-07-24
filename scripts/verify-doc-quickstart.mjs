@@ -72,7 +72,7 @@ try {
     "npm install --global patchrace@0.1.0",
     "npx --yes patchrace@0.1.0",
     ".artifacts/quickstart/<run-id>/report.json",
-    "not sandbox",
+    "not a filesystem, process, credential, or network sandbox",
     "does not contact Pi, Claude, Codex",
     "do not need a PatchRace source checkout",
   ])
