@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Deterministic cross-ecosystem replay tasks.",
+  "tasks": [
+    {
+      "id": "javascript-add",
+      "ecosystem": "javascript",
+      "category": "logic",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/add.mjs",
+      "baselineContent": "export const add = (a, b) => a - b;\n",
+      "referenceContent": "export const add = (a, b) => a + b;\n",
+      "instruction": "Fix add so it returns the sum.\n"
+    },
+    {
+      "id": "javascript-slug",
+      "ecosystem": "javascript",
+      "category": "text",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/slug.mjs",
+      "baselineContent": "export const slug = (value) => value;\n",
+      "referenceContent": "export const slug = (value) => value.trim().toLowerCase().replaceAll(' ', '-');\n",
+      "instruction": "Normalize labels into lowercase hyphenated slugs.\n"
+    },
+    {
+      "id": "javascript-hidden-range",
+      "ecosystem": "javascript",
+      "category": "boundary",
+      "visibility": "hidden",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/range.mjs",
+      "baselineContent": "export const inRange = (value, max) => value > 0 && value < max;\n",
+      "referenceContent": "export const inRange = (value, max) => value >= 0 && value <= max;\n",
+      "instruction": "Make the range check inclusive at both boundaries.\n"
+    },
+    {
+      "id": "javascript-deliberate-flake",
+      "ecosystem": "javascript",
+      "category": "logic",
+      "visibility": "public",
+      "expectedValidity": "flaky",
+      "sourcePath": "src/state.mjs",
+      "baselineContent": "export const state = 'old';\n",
+      "referenceContent": "export const state = 'new';\n",
+      "instruction": "Update the exported state.\n"
+    },
+    {
+      "id": "python-total",
+      "ecosystem": "python",
+      "category": "logic",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/total.py",
+      "baselineContent": "def total(values):\n    return 0\n",
+      "referenceContent": "def total(values):\n    return sum(values)\n",
+      "instruction": "Return the sum of all input values.\n"
+    },
+    {
+      "id": "python-normalize",
+      "ecosystem": "python",
+      "category": "text",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/normalize.py",
+      "baselineContent": "def normalize(value):\n    return value\n",
+      "referenceContent": "def normalize(value):\n    return value.strip().lower()\n",
+      "instruction": "Trim and lowercase normalized values.\n"
+    },
+    {
+      "id": "python-hidden-validator",
+      "ecosystem": "python",
+      "category": "boundary",
+      "visibility": "hidden",
+      "expectedValidity": "eligible",
+      "sourcePath": "src/validator.py",
+      "baselineContent": "def valid(value):\n    return bool(value)\n",
+      "referenceContent": "def valid(value):\n    return isinstance(value, str) and bool(value.strip())\n",
+      "instruction": "Accept only nonblank string values.\n"
+    },
+    {
+      "id": "config-json-mode",
+      "ecosystem": "repository-config",
+      "category": "configuration",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "config/settings.json",
+      "baselineContent": "{\"mode\":\"unsafe\",\"retries\":1}\n",
+      "referenceContent": "{\"mode\":\"safe\",\"retries\":1}\n",
+      "instruction": "Change the configuration mode to safe.\n"
+    },
+    {
+      "id": "docs-install-heading",
+      "ecosystem": "repository-config",
+      "category": "documentation",
+      "visibility": "public",
+      "expectedValidity": "eligible",
+      "sourcePath": "docs/install.md",
+      "baselineContent": "Setup\n\nRun the installer.\n",
+      "referenceContent": "# Installation\n\nRun the installer.\n",
+      "instruction": "Use the canonical Installation heading.\n"
+    },
+    {
+      "id": "workflow-hidden-policy",
+      "ecosystem": "repository-config",
+      "category": "configuration",
+      "visibility": "hidden",
+      "expectedValidity": "eligible",
+      "sourcePath": ".github/workflows/policy.yml",
+      "baselineContent": "permissions: write-all\n",
+      "referenceContent": "permissions: read-all\n",
+      "instruction": "Restrict the workflow to read-only permissions.\n"
+    }
+  ]
+}

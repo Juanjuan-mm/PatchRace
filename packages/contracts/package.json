@@ -1,0 +1,42 @@
+{
+  "name": "@patchrace/contracts",
+  "version": "0.1.0-rc.2",
+  "description": "Stable PatchRace contracts, errors, and wire types",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/songjinmiao/PatchRace.git",
+    "directory": "packages/contracts"
+  },
+  "homepage": "https://github.com/songjinmiao/PatchRace#readme",
+  "bugs": {
+    "url": "https://github.com/songjinmiao/PatchRace/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.0 <25"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schemas/trace-event-v1.json": "./schemas/trace-event-v1.json",
+    "./schemas/suite-v1.json": "./schemas/suite-v1.json",
+    "./schemas/task-v1.json": "./schemas/task-v1.json"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/.tsbuildinfo",
+    "schemas",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -b"
+  }
+}

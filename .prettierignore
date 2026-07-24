@@ -1,0 +1,10 @@
+.artifacts
+.pnpm-store
+coverage
+dist
+docs
+fixtures
+node_modules
+quality-fixtures
+spikes
+pnpm-lock.yaml

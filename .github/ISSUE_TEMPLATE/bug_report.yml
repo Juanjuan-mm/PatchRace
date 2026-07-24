@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible PatchRace defect with public-safe evidence
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach credentials, private source, raw traces, personal paths, or unreviewed reports. Use the Security tab for sensitive findings.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safe report
+      options:
+        - label: This report contains no credential, private repository content, raw Agent trace, personal path, or unpatched exploit detail.
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: PatchRace version
+      placeholder: 0.1.0-rc.1
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, Node, Git, and relevant Agent CLI versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Exact public-safe commands and fixture needed to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: preservation
+    attributes:
+      label: Data and cleanup impact
+      description: State whether branches, worktrees, unrelated files, credentials, global Pi state, or retained evidence were affected.
+    validations:
+      required: true

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.artifacts/
+.pnpm-store/
+coverage/
+.patchrace/runs/
+.patchrace/worktrees/
+.patchrace/cache/
+*.tgz
+.DS_Store

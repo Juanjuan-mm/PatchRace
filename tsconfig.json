@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/contracts" },
+    { "path": "packages/core" },
+    { "path": "packages/adapters" },
+    { "path": "packages/tasks" },
+    { "path": "packages/diagnosis" },
+    { "path": "packages/optimizer" },
+    { "path": "packages/report" },
+    { "path": "packages/cli" },
+    { "path": "packages/pi-extension" }
+  ]
+}

@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://patchrace.dev/schemas/task-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "revision",
+    "baseline",
+    "instruction",
+    "setup",
+    "verifier",
+    "assertions",
+    "budgets",
+    "provenance",
+    "metadata"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "submodules", "lfs"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "parent": { "type": "integer", "minimum": 1 },
+        "submodules": { "enum": ["locked", "disabled"] },
+        "lfs": { "enum": ["required", "optional", "disabled"] }
+      }
+    },
+    "instruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "hash"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+        },
+        "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commands", "assets"],
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "timeoutSeconds"],
+            "oneOf": [
+              { "required": ["argv"], "properties": { "argv": true } },
+              {
+                "required": ["shell", "shellKind"],
+                "properties": { "shell": true, "shellKind": true }
+              }
+            ],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "kind": {
+                "enum": [
+                  "setup",
+                  "build",
+                  "test",
+                  "lint",
+                  "typecheck",
+                  "command"
+                ]
+              },
+              "argv": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "shell": { "type": "string", "minLength": 1 },
+              "shellKind": { "enum": ["posix", "powershell"] },
+              "cwd": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "environment": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "inherit": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+                    }
+                  },
+                  "pass": {
+                    "type": "object",
+                    "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+                    "additionalProperties": { "type": "string" }
+                  }
+                }
+              },
+              "timeoutSeconds": { "type": "number", "minimum": 0 },
+              "expectedExitCodes": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+              },
+              "cache": { "enum": ["none", "read-only", "read-write"] },
+              "network": { "enum": ["forbidden", "allowed", "required"] }
+            }
+          }
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "mount", "hash"],
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "mount": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+            }
+          }
+        }
+      }
+    },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visibility", "assets", "commands"],
+      "properties": {
+        "visibility": { "enum": ["hidden", "public"] },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "mount", "hash"],
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "mount": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+            }
+          }
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "timeoutSeconds"],
+            "oneOf": [
+              { "required": ["argv"], "properties": { "argv": true } },
+              {
+                "required": ["shell", "shellKind"],
+                "properties": { "shell": true, "shellKind": true }
+              }
+            ],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "kind": {
+                "enum": [
+                  "setup",
+                  "build",
+                  "test",
+                  "lint",
+                  "typecheck",
+                  "command"
+                ]
+              },
+              "argv": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "shell": { "type": "string", "minLength": 1 },
+              "shellKind": { "enum": ["posix", "powershell"] },
+              "cwd": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "environment": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "inherit": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+                    }
+                  },
+                  "pass": {
+                    "type": "object",
+                    "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+                    "additionalProperties": { "type": "string" }
+                  }
+                }
+              },
+              "timeoutSeconds": { "type": "number", "minimum": 0 },
+              "expectedExitCodes": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+              },
+              "cache": { "enum": ["none", "read-only", "read-write"] },
+              "network": { "enum": ["forbidden", "allowed", "required"] }
+            }
+          }
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind", "paths"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": {
+                "enum": ["required-paths", "forbidden-paths", "protected-paths"]
+              },
+              "paths": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind", "path", "encoding"],
+            "anyOf": [
+              { "required": ["exact"] },
+              { "required": ["regex"] },
+              { "required": ["hash"] }
+            ],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": { "const": "file-content" },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+              },
+              "encoding": { "const": "utf8" },
+              "exact": { "type": "string" },
+              "regex": { "type": "string" },
+              "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": { "const": "diff-limit" },
+              "maxChangedFiles": { "type": "integer", "minimum": 0 },
+              "maxLines": { "type": "integer", "minimum": 0 },
+              "maxBinaryFiles": { "type": "integer", "minimum": 0 },
+              "allowDependencyChanges": { "type": "boolean" },
+              "allowLockfileChanges": { "type": "boolean" }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": { "const": "repository-cleanliness" },
+              "allowedUntrackedPaths": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind", "commandId"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": { "const": "command" },
+              "commandId": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "expectedStatus": { "enum": ["passed", "failed"] }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" },
+              "optionalReason": { "type": "string", "minLength": 1 },
+              "kind": {
+                "enum": [
+                  "patch-applies",
+                  "baseline-invariant",
+                  "hidden-asset-non-disclosure"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trialSeconds", "maxTokens", "maxCostUsd", "maxPatchLines"],
+      "properties": {
+        "trialSeconds": { "type": "number", "minimum": 0 },
+        "setupSeconds": { "type": "number", "minimum": 0 },
+        "graderSeconds": { "type": "number", "minimum": 0 },
+        "maxTokens": {
+          "anyOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+        },
+        "maxCostUsd": {
+          "anyOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+        },
+        "maxOutputBytes": { "type": "integer", "minimum": 0 },
+        "maxPatchLines": { "type": "integer", "minimum": 0 },
+        "maxChangedFiles": { "type": "integer", "minimum": 0 },
+        "diskMiB": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "sourceCommit",
+        "referencePatchHash",
+        "createdAt",
+        "reviewedBy"
+      ],
+      "properties": {
+        "source": { "enum": ["manual", "git-history", "github"] },
+        "sourceCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "sourceParent": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "discoveryQuery": { "type": "string" },
+        "extractionToolVersion": { "type": "string", "minLength": 1 },
+        "referencePatchHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "verifierOrigin": { "type": "string", "minLength": 1 },
+        "exclusions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "reviewedBy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "ecosystem": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "split": { "enum": ["training", "validation", "holdout"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "demoId": "pi-package-manager-guidance-v1",
+  "seed": "patchrace-m8-heldout-v1",
+  "baselineGuidance": "# Project guidance\n",
+  "candidateFact": "Use pnpm for repository package commands.",
+  "predeclared": {
+    "primaryMetric": "heldoutSuccessRate",
+    "minimumImprovement": 1,
+    "maxContextTokenIncrease": 50,
+    "maxConfigComplexityIncrease": 2,
+    "maxCostIncreaseUsd": 0,
+    "maxLatencyIncreaseMs": 0,
+    "maxFootprintIncreaseLines": 0
+  },
+  "tasks": [
+    { "id": "bugfix-a", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "bugfix-b", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "bugfix-c", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "bugfix-d", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "bugfix-e", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "bugfix-f", "category": "bugfix", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-a", "category": "feature", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-b", "category": "feature", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-c", "category": "feature", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-d", "category": "feature", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-e", "category": "feature", "requiredFact": "Use pnpm for repository package commands." },
+    { "id": "feature-f", "category": "feature", "requiredFact": "Use pnpm for repository package commands." }
+  ],
+  "claimBoundary": "This deterministic fixture demonstrates a project-local Pi guidance ablation and split protocol; it is not evidence about arbitrary repositories, tasks, models, or live vendor quality."
+}

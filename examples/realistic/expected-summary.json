@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PASS",
+  "evidence": "deterministic-public-fixtures",
+  "comparisons": [
+    {
+      "id": "typescript-retry-after",
+      "ecosystem": "typescript",
+      "comparison": "deterministic-harness-fixture",
+      "variants": {
+        "fixture-no-change": "failed",
+        "fixture-reviewed-fix": "passed"
+      },
+      "rank1": "fixture-reviewed-fix",
+      "decisiveDimensionAgainstRunnerUp": "hard-gates",
+      "validTrials": 2,
+      "providerCalls": false,
+      "credentials": false,
+      "network": false,
+      "userWorktreePreserved": true,
+      "unrelatedStatePreserved": true,
+      "report": ".artifacts/examples/typescript-retry-after/report.json",
+      "html": ".artifacts/examples/typescript-retry-after/index.html",
+      "claimBoundary": "This deterministic public fixture proves the recorded comparison mechanics; it is not live Agent quality evidence."
+    },
+    {
+      "id": "python-invoice-totals",
+      "ecosystem": "python",
+      "comparison": "deterministic-harness-fixture",
+      "variants": {
+        "fixture-no-change": "failed",
+        "fixture-reviewed-fix": "passed"
+      },
+      "rank1": "fixture-reviewed-fix",
+      "decisiveDimensionAgainstRunnerUp": "hard-gates",
+      "validTrials": 2,
+      "providerCalls": false,
+      "credentials": false,
+      "network": false,
+      "userWorktreePreserved": true,
+      "unrelatedStatePreserved": true,
+      "report": ".artifacts/examples/python-invoice-totals/report.json",
+      "html": ".artifacts/examples/python-invoice-totals/index.html",
+      "claimBoundary": "This deterministic public fixture proves the recorded comparison mechanics; it is not live Agent quality evidence."
+    },
+    {
+      "id": "posix-shell-failure-selector",
+      "ecosystem": "posix-shell",
+      "comparison": "deterministic-harness-fixture",
+      "variants": {
+        "fixture-no-change": "failed",
+        "fixture-reviewed-fix": "passed"
+      },
+      "rank1": "fixture-reviewed-fix",
+      "decisiveDimensionAgainstRunnerUp": "hard-gates",
+      "validTrials": 2,
+      "providerCalls": false,
+      "credentials": false,
+      "network": false,
+      "userWorktreePreserved": true,
+      "unrelatedStatePreserved": true,
+      "report": ".artifacts/examples/posix-shell-failure-selector/report.json",
+      "html": ".artifacts/examples/posix-shell-failure-selector/index.html",
+      "claimBoundary": "This deterministic public fixture proves the recorded comparison mechanics; it is not live Agent quality evidence."
+    }
+  ],
+  "teaching": {
+    "demoId": "pi-package-manager-guidance-v1",
+    "trainingCount": 8,
+    "validationCount": 2,
+    "holdoutCount": 2,
+    "holdoutIdsVisibleDuringProposal": false,
+    "oneMutation": true,
+    "validationSelection": "promote-eligible",
+    "finalHoldoutPassed": true,
+    "retuneAllowed": false,
+    "decision": "promote-eligible",
+    "claimBoundary": "This deterministic fixture demonstrates a project-local Pi guidance ablation and split protocol; it is not evidence about arbitrary repositories, tasks, models, or live vendor quality."
+  },
+  "providerCalls": false,
+  "credentialAccess": false,
+  "networkAccess": false,
+  "publication": false
+}

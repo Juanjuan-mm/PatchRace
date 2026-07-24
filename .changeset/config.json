@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
+  "changelog": ["@changesets/cli/changelog", null],
+  "commit": false,
+  "fixed": [
+    [
+      "@patchrace/contracts",
+      "@patchrace/core",
+      "@patchrace/adapters",
+      "@patchrace/tasks",
+      "@patchrace/diagnosis",
+      "@patchrace/optimizer",
+      "@patchrace/report",
+      "patchrace",
+      "pi-patchrace"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
