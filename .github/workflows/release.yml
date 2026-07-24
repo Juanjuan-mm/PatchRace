@@ -1,6 +1,9 @@
 name: Release
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
@@ -28,7 +31,7 @@ jobs:
       - name: Check out exact release tag
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ inputs.tag || github.ref_name }}
           fetch-depth: 0
           persist-credentials: false
       - name: Set up Node
@@ -44,7 +47,9 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
       - name: Verify immutable release identity
-        run: node scripts/verify-release-ref.mjs "${{ inputs.tag }}"
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: node scripts/verify-release-ref.mjs "$RELEASE_TAG"
       - name: Run full release gates
         run: pnpm verify
       - name: Publish audited tarballs
@@ -53,23 +58,32 @@ jobs:
           # first release, configure this workflow as each package's npm
           # trusted publisher and remove the environment secret.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           RELEASE_VERSION="${RELEASE_TAG#v}"
-          npm publish .artifacts/packages/patchrace-contracts-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-core-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-adapters-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-tasks-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-diagnosis-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-optimizer-*.tgz --access public
-          npm publish .artifacts/packages/patchrace-report-*.tgz --access public
-          npm publish ".artifacts/packages/patchrace-${RELEASE_VERSION}.tgz" --access public
-          npm publish .artifacts/packages/pi-patchrace-*.tgz --access public
+          publish_if_missing() {
+            PACKAGE_NAME="$1"
+            TARBALL="$2"
+            if npm view "${PACKAGE_NAME}@${RELEASE_VERSION}" version >/dev/null 2>&1; then
+              echo "${PACKAGE_NAME}@${RELEASE_VERSION} is already published; registry-byte verification will validate it."
+            else
+              npm publish "$TARBALL" --access public
+            fi
+          }
+          publish_if_missing "@patchrace/contracts" .artifacts/packages/patchrace-contracts-*.tgz
+          publish_if_missing "@patchrace/core" .artifacts/packages/patchrace-core-*.tgz
+          publish_if_missing "@patchrace/adapters" .artifacts/packages/patchrace-adapters-*.tgz
+          publish_if_missing "@patchrace/tasks" .artifacts/packages/patchrace-tasks-*.tgz
+          publish_if_missing "@patchrace/diagnosis" .artifacts/packages/patchrace-diagnosis-*.tgz
+          publish_if_missing "@patchrace/optimizer" .artifacts/packages/patchrace-optimizer-*.tgz
+          publish_if_missing "@patchrace/report" .artifacts/packages/patchrace-report-*.tgz
+          publish_if_missing "patchrace" ".artifacts/packages/patchrace-${RELEASE_VERSION}.tgz"
+          publish_if_missing "pi-patchrace" .artifacts/packages/pi-patchrace-*.tgz
       - name: Verify registry bytes
         run: node scripts/verify-published-release.mjs
       - name: Verify clean registry install
         env:
-          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           RELEASE_VERSION="${RELEASE_TAG#v}"
           npm install --global "patchrace@${RELEASE_VERSION}"
@@ -78,13 +92,20 @@ jobs:
       - name: Publish GitHub release and audited artifacts
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          gh release create "$RELEASE_TAG" \
-            --verify-tag \
-            --title "PatchRace $RELEASE_TAG" \
-            --notes-file "docs/releases/$RELEASE_TAG.md"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --title "PatchRace $RELEASE_TAG" \
+              --notes-file "docs/releases/$RELEASE_TAG.md"
+          else
+            gh release create "$RELEASE_TAG" \
+              --verify-tag \
+              --title "PatchRace $RELEASE_TAG" \
+              --notes-file "docs/releases/$RELEASE_TAG.md"
+          fi
           gh release upload "$RELEASE_TAG" \
+            --clobber \
             .artifacts/packages/*.tgz \
             .artifacts/release-packages.json \
             .artifacts/published-release.json

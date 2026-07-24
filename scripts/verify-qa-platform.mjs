@@ -3,6 +3,8 @@ import { cp, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { arch, platform, release, tmpdir } from "node:os";
 import { basename, join, relative, resolve, sep } from "node:path";
 
+import { packageManagerCommand } from "./package-manager-command.mjs";
+
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const useInstalledWorkspace = process.argv.includes("--installed-workspace");
 const temporaryRoot = useInstalledWorkspace
@@ -13,7 +15,8 @@ const workingRoot = temporaryRoot
   : repositoryRoot;
 
 function run(executable, arguments_, options = {}) {
-  const result = spawnSync(executable, arguments_, {
+  const command = packageManagerCommand(executable, arguments_);
+  const result = spawnSync(command.executable, command.args, {
     cwd: options.cwd ?? workingRoot,
     encoding: "utf8",
     env: process.env,

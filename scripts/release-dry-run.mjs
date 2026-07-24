@@ -10,6 +10,8 @@ import {
 import { basename, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
+import { packageManagerCommand } from "./package-manager-command.mjs";
+
 const root = resolve(import.meta.dirname, "..");
 const packageRoot = join(root, "packages");
 const outputRoot = join(root, ".artifacts", "packages");
@@ -17,7 +19,8 @@ const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 const run = (command, args, options = {}) => {
-  const result = spawnSync(command, args, {
+  const invocation = packageManagerCommand(command, args);
+  const result = spawnSync(invocation.executable, invocation.args, {
     cwd: root,
     encoding: "utf8",
     ...options,

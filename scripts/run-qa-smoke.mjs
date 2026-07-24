@@ -12,6 +12,8 @@ import { tmpdir } from "node:os";
 import { delimiter, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
+import { packageManagerCommand } from "./package-manager-command.mjs";
+
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const mode = process.argv.includes("--packed") ? "packed" : "built";
 const allowNetworkInstall = process.argv.includes("--network-install");
@@ -25,7 +27,8 @@ function sha256(value) {
 }
 
 function run(executable, arguments_, options = {}) {
-  const result = spawnSync(executable, arguments_, {
+  const command = packageManagerCommand(executable, arguments_);
+  const result = spawnSync(command.executable, command.args, {
     cwd: options.cwd ?? projectRoot,
     encoding: "utf8",
     env: options.env ?? process.env,
