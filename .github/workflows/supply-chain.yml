@@ -41,7 +41,7 @@ jobs:
           node-version: 22.22.0
           package-manager-cache: false
       - name: Install and enable pinned Corepack
-        run: npm install --global corepack@0.35.0 && corepack enable
+        run: npm install --global corepack@0.35.0 --force && corepack enable
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
       - name: Audit advisories

@@ -35,7 +35,9 @@ jobs:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
       - name: Install and enable pinned Corepack
-        run: npm install --global corepack@0.35.0 && corepack enable
+        # --force replaces the runner's bundled Corepack shim with this exact
+        # reviewed version; it does not relax project dependency resolution.
+        run: npm install --global corepack@0.35.0 --force && corepack enable
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
       - name: Validate platform cell and packed consumer

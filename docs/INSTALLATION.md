@@ -130,7 +130,7 @@ Contributors, not ordinary npm users, need Corepack and the pinned pnpm:
 ```bash
 git clone https://github.com/Juanjuan-mm/PatchRace.git
 cd PatchRace
-npm install --global corepack@0.35.0
+npm install --global corepack@0.35.0 --force
 corepack enable
 corepack pnpm install --frozen-lockfile
 corepack pnpm check

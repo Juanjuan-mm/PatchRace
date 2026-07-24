@@ -39,7 +39,7 @@ jobs:
           package-manager-cache: false
       - name: Install pinned release tooling
         run: |
-          npm install --global corepack@0.35.0 npm@11.5.1
+          npm install --global corepack@0.35.0 npm@11.5.1 --force
           corepack enable
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
