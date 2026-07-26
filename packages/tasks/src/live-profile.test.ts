@@ -23,4 +23,21 @@ describe("live parity profile", () => {
     expect(source).toContain("allowLockfileChanges: false");
     expect(source).toContain("/Node 22.*24.*26/u");
   });
+
+  it("keeps aggregate and single-trial live cost ceilings distinct", async () => {
+    const source = await readFile(
+      resolve(import.meta.dirname, "../../../scripts/run-live-e2e.mjs"),
+      "utf8",
+    );
+
+    expect(source).toContain(
+      "authorization.maxSingleTrialCostUsd <= authorization.maxCostUsd",
+    );
+    expect(source).toContain(
+      "task.budgets.maxCostUsd = authorization.maxSingleTrialCostUsd",
+    );
+    expect(source).not.toContain(
+      "authorization.maxCostUsd /\n  (authorization.repeat * authorization.variants.length)",
+    );
+  });
 });

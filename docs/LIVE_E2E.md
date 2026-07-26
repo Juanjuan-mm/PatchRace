@@ -90,6 +90,7 @@ The shape is:
   "maxWallSeconds": 3600,
   "maxTokens": 98304,
   "maxCostUsd": 10,
+  "maxSingleTrialCostUsd": 4,
   "tokenBudgetMode": "post-trial-admission",
   "providerCostCeilingConfirmed": true,
   "environmentNames": [],
@@ -136,7 +137,10 @@ exhausted, but cannot interrupt an in-flight provider call at an exact token.
 `providerCostCeilingConfirmed: true` attests that the operator configured the
 aggregate monetary limit with the providers because Codex and Pi do not expose
 an enforceable cost limit in their supported streams. Claude Code additionally
-receives a per-trial `--max-budget-usd` limit.
+receives `maxSingleTrialCostUsd` as a per-trial `--max-budget-usd` limit. This
+single-trial ceiling must be positive and no larger than `maxCostUsd`; it is
+kept separate because dividing an aggregate budget equally can stop one Agent
+prematurely even when the provider-enforced aggregate still has capacity.
 
 The runner executes all three variants through the same PatchRace race,
 deterministic public verifiers, report, and cleanup preview. It writes `PASS`

@@ -56,7 +56,10 @@ assert(
     Number.isFinite(authorization.maxTokens) &&
     authorization.maxTokens > 0 &&
     Number.isFinite(authorization.maxCostUsd) &&
-    authorization.maxCostUsd > 0,
+    authorization.maxCostUsd > 0 &&
+    Number.isFinite(authorization.maxSingleTrialCostUsd) &&
+    authorization.maxSingleTrialCostUsd > 0 &&
+    authorization.maxSingleTrialCostUsd <= authorization.maxCostUsd,
   "Live wall, token, and monetary authorization ceilings are required.",
 );
 assert(
@@ -101,9 +104,7 @@ task.budgets.maxTokens = Math.floor(
   authorization.maxTokens /
     (authorization.repeat * authorization.variants.length),
 );
-task.budgets.maxCostUsd =
-  authorization.maxCostUsd /
-  (authorization.repeat * authorization.variants.length);
+task.budgets.maxCostUsd = authorization.maxSingleTrialCostUsd;
 writeFileSync(taskPath, `${JSON.stringify(task, null, 2)}\n`);
 
 const environmentNames = [
@@ -329,6 +330,7 @@ const evidence = {
     maxWallSeconds: authorization.maxWallSeconds,
     maxTokens: authorization.maxTokens,
     maxCostUsd: authorization.maxCostUsd,
+    maxSingleTrialCostUsd: authorization.maxSingleTrialCostUsd,
     tokenBudgetMode: authorization.tokenBudgetMode,
     providerCostCeilingConfirmed: authorization.providerCostCeilingConfirmed,
   },
