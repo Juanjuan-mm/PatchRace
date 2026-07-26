@@ -124,6 +124,10 @@ try {
         run("git", ["init", "-q"], target).status === 0,
       );
       expect(
+        "conflict git newline config",
+        run("git", ["config", "core.autocrlf", "false"], target).status === 0,
+      );
+      expect(
         "first patch",
         run("git", ["apply", "candidate-a.diff"], target).status === 0,
       );
