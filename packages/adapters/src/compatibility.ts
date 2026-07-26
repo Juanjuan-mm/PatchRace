@@ -42,10 +42,10 @@ export const ADAPTER_COMPATIBILITY: Readonly<
   codex: {
     adapter: "codex",
     executable: "codex",
-    range: ">=0.145.0 <0.146.0",
+    range: ">=0.145.0 <0.147.0",
     minimum: "0.145.0",
-    maximumExclusive: "0.146.0",
-    fixtureVersions: ["0.145.0", "0.145.0-alpha.27"],
+    maximumExclusive: "0.147.0",
+    fixtureVersions: ["0.145.0", "0.145.0-alpha.27", "0.146.0-alpha.3.1"],
     degradations: [
       "Search and file-read details are unavailable unless represented by an emitted item.",
       "Cost is unavailable unless a future supported stream reports it.",

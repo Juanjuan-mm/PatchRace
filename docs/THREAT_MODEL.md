@@ -54,7 +54,7 @@ configured agents operate offline.
 | `T-07` | Trace/report/export exposes secrets or private code. | Keep raw evidence local, create a separate minimized export, redact configured values, preview, confirm, and require human review. |
 | `T-08` | Generated HTML executes untrusted content. | Escape content and use a default-deny CSP with no script or remote resources. |
 | `T-09` | PatchRace extracts or persists vendor authentication material. | Use normal CLI authentication, pass only declared environment names, and record readiness rather than tokens. |
-| `T-10` | Runaway trials exhaust cost, time, disk, or quota. | Enforce wall/trial/token/cost/disk/concurrency budgets and never retry paid work silently. |
+| `T-10` | Runaway trials exhaust cost, time, disk, or quota. | Enforce wall/output/disk/concurrency controls locally, stop subsequent admission on reported token/cost exhaustion, require provider-side ceilings where streams cannot enforce cost, record enforcement limitations, and never retry paid work silently. |
 | `T-11` | Dependencies or release artifacts are compromised. | Exact lock integrity, minimal runtime dependencies, license/advisory checks, and package-content allowlists. |
 | `T-12` | A candidate overfits and degrades future Pi behavior. | Separate proposal, validation, and holdout data; ablate one mutation; require explicit promotion and rollback. |
 | `T-13` | Imported artifacts exhaust resources or exploit parsers. | Apply size/count/depth limits, schema validation, inert parsing, and malformed-input tests. |

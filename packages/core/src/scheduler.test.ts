@@ -85,11 +85,13 @@ describe("scheduler and budgets", () => {
           },
         },
         { id: "two", run: async () => 2 },
+        { id: "three", run: async () => 3 },
       ],
       { concurrency: 1, budgets },
     );
     expect(results.map((result) => result.status)).toEqual([
       "completed",
+      "budget_exhausted",
       "budget_exhausted",
     ]);
     expect(budgets.snapshot().consumed).toMatchObject({

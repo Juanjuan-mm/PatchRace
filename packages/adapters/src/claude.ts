@@ -189,7 +189,14 @@ export class ClaudeCodeAdapter extends CliAdapter {
       "--verbose",
       "--permission-mode",
       "dontAsk",
+      "--allowed-tools",
+      "Read,Edit,Write,Bash,Glob,Grep",
     ];
+    if (
+      input.budgets?.maxCostUsd !== null &&
+      input.budgets?.maxCostUsd !== undefined
+    )
+      args.push("--max-budget-usd", String(input.budgets.maxCostUsd));
     if (input.model !== undefined) args.push("--model", input.model);
     if (input.persistSession === false) args.push("--no-session-persistence");
     return {

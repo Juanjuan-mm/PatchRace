@@ -90,6 +90,8 @@ The shape is:
   "maxWallSeconds": 3600,
   "maxTokens": 98304,
   "maxCostUsd": 10,
+  "tokenBudgetMode": "post-trial-admission",
+  "providerCostCeilingConfirmed": true,
   "environmentNames": [],
   "variants": [
     {
@@ -127,14 +129,20 @@ corepack pnpm qa:live -- \
 ```
 
 Omitting any required field or the final confirmation stops before doctor or
-Agent invocation. The runner executes all three variants through the same
-PatchRace race, deterministic public verifiers, report, and cleanup preview.
-It writes a bounded summary containing adapter/model provenance, outcomes,
-hard-gate status, observable usage availability, duration, footprint, and the
-authorization ceilings. Raw evidence stays local-sensitive and is never
-uploaded automatically.
+Agent invocation. `tokenBudgetMode: "post-trial-admission"` explicitly
+acknowledges that supported CLIs report token usage only after an invocation:
+PatchRace stops admission of subsequent trials when the reported aggregate is
+exhausted, but cannot interrupt an in-flight provider call at an exact token.
+`providerCostCeilingConfirmed: true` attests that the operator configured the
+aggregate monetary limit with the providers because Codex and Pi do not expose
+an enforceable cost limit in their supported streams. Claude Code additionally
+receives a per-trial `--max-budget-usd` limit.
 
-Codex cost remains unavailable in the supported JSON stream, so PatchRace does
-not falsely claim aggregate monetary enforcement. The operator's provider
-ceiling is still mandatory authorization; token and wall ceilings are enforced
-by PatchRace where the adapters expose the required signals.
+The runner executes all three variants through the same PatchRace race,
+deterministic public verifiers, report, and cleanup preview. It writes `PASS`
+only when every authorized trial exists, the execution completed without
+budget exhaustion, all deterministic gates passed, integrity is valid, and
+the observed token/cost totals stay within authorization. A partial,
+budget-exhausted, unavailable-token, or failed-gate run retains durable local
+evidence but cannot produce passing parity evidence. Raw evidence stays
+local-sensitive and is never uploaded automatically.

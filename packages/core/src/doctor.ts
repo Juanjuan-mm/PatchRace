@@ -63,13 +63,14 @@ async function probe(
   args: readonly string[],
   cwd: string,
   capture = true,
+  inheritEnvironment: readonly string[] = ["PATH", "LANG", "LC_ALL", "TERM"],
 ): Promise<{ ok: boolean; output: string }> {
   const output: Buffer[] = [];
   const result = await runProcess({
     executable,
     args,
     cwd,
-    inheritEnvironment: ["PATH", "LANG", "LC_ALL", "TERM"],
+    inheritEnvironment,
     timeoutMs: 5000,
     maxOutputBytes: 256 * 1024,
     ...(capture
@@ -180,10 +181,17 @@ export async function inspectEnvironment(options: {
   });
 
   let adapters: Readonly<Record<string, AdapterConfig>> = {};
+  let adapterEnvironment = ["PATH", "LANG", "LC_ALL", "TERM"];
   if (options.configPath !== undefined) {
     try {
       const loaded = await loadSuiteConfig(options.configPath);
       adapters = loaded.config.adapters;
+      adapterEnvironment = [
+        ...new Set([
+          ...loaded.config.defaults.environment.inherit,
+          ...loaded.config.defaults.environment.pass,
+        ]),
+      ].sort();
       checks.push({
         id: "config.suite",
         status: "pass",
@@ -237,6 +245,8 @@ export async function inspectEnvironment(options: {
       executable,
       [...prefix, "--version"],
       projectRoot,
+      true,
+      adapterEnvironment,
     );
     let auth: "ready" | "missing" | "expired" | "unknown" = "unknown";
     if (adapter.kind === "codex")
@@ -246,6 +256,7 @@ export async function inspectEnvironment(options: {
           [...prefix, "login", "status"],
           projectRoot,
           false,
+          adapterEnvironment,
         )
       ).ok
         ? "ready"
@@ -257,6 +268,7 @@ export async function inspectEnvironment(options: {
           [...prefix, "auth", "status"],
           projectRoot,
           false,
+          adapterEnvironment,
         )
       ).ok
         ? "ready"

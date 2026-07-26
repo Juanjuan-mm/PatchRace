@@ -59,6 +59,14 @@ assert(
     authorization.maxCostUsd > 0,
   "Live wall, token, and monetary authorization ceilings are required.",
 );
+assert(
+  authorization.tokenBudgetMode === "post-trial-admission",
+  "Acknowledge that token usage is enforced between trials, not streamed as a provider hard cap.",
+);
+assert(
+  authorization.providerCostCeilingConfirmed === true,
+  "Confirm a provider-side aggregate cost ceiling because not every supported stream exposes enforceable cost.",
+);
 const variants = authorization.variants;
 assert(
   Array.isArray(variants) && variants.length === 3,
@@ -74,6 +82,7 @@ assert(
 for (const variant of variants)
   assert(
     typeof variant.id === "string" &&
+      /^[a-z][a-z0-9-]{0,63}$/u.test(variant.id) &&
       typeof variant.provider === "string" &&
       typeof variant.model === "string" &&
       typeof variant.executable === "string" &&
@@ -81,7 +90,7 @@ for (const variant of variants)
       variant.provider.length > 0 &&
       variant.model.length > 0 &&
       variant.executable.length > 0,
-    "Every live variant requires an ID, provider, model, and executable.",
+    "Every live variant requires a schema-valid ID, provider, model, and executable.",
   );
 
 const project = resolve(prepared.project);
@@ -92,6 +101,9 @@ task.budgets.maxTokens = Math.floor(
   authorization.maxTokens /
     (authorization.repeat * authorization.variants.length),
 );
+task.budgets.maxCostUsd =
+  authorization.maxCostUsd /
+  (authorization.repeat * authorization.variants.length);
 writeFileSync(taskPath, `${JSON.stringify(task, null, 2)}\n`);
 
 const environmentNames = [
@@ -204,14 +216,27 @@ const invoke = (commandArgs) => {
       maxBuffer: 64 * 1024 * 1024,
     },
   );
-  if (result.status !== 0)
-    throw new Error(`Live PatchRace command failed (${result.status}).`);
+  if (result.status !== 0) {
+    let code = "UNKNOWN";
+    try {
+      const failure = JSON.parse(result.stdout);
+      if (typeof failure?.error?.code === "string") code = failure.error.code;
+    } catch {
+      // Keep diagnostics bounded to a stable non-sensitive error code.
+    }
+    throw new Error(
+      `Live PatchRace command failed (${result.status}, ${code}).`,
+    );
+  }
   return JSON.parse(result.stdout);
 };
 
 for (const variant of variants) {
   const doctor = invoke(["doctor", "--adapter", variant.id]);
-  assert(doctor.status === "completed", `Doctor failed for ${variant.id}.`);
+  assert(
+    doctor.status === "completed" && doctor.data?.overall !== "fail",
+    `Doctor failed for ${variant.id}.`,
+  );
 }
 const raced = invoke([
   "race",
@@ -227,6 +252,39 @@ const report = raced.data?.report;
 assert(
   typeof raced.data?.runId === "string" && Array.isArray(report?.trials),
   "Live race omitted its durable report identity.",
+);
+const expectedTrials = variants.length * authorization.repeat;
+assert(
+  raced.data?.executionStatus === "completed" &&
+    report.source?.executionStatus === "completed" &&
+    report.trials.length === expectedTrials,
+  "Live race did not complete every authorized trial.",
+);
+assert(
+  report.trials.every(
+    (trial) =>
+      trial.outcome === "passed" &&
+      trial.integrity === "valid" &&
+      trial.hardGates.every(({ status }) => status === "passed"),
+  ),
+  "At least one live trial failed a deterministic gate.",
+);
+const observedTokens = report.trials.map(
+  (trial) => trial.metrics?.tokens?.value,
+);
+assert(
+  observedTokens.every((value) => Number.isFinite(value) && value >= 0) &&
+    observedTokens.reduce((sum, value) => sum + value, 0) <=
+      authorization.maxTokens,
+  "Live token usage is unavailable or exceeded authorization.",
+);
+const observedCosts = report.trials
+  .map((trial) => trial.metrics?.costUsd?.value)
+  .filter((value) => Number.isFinite(value));
+assert(
+  observedCosts.reduce((sum, value) => sum + value, 0) <=
+    authorization.maxCostUsd,
+  "Observed live cost exceeded authorization.",
 );
 const cleanupPreview = invoke([
   "clean",
@@ -271,6 +329,8 @@ const evidence = {
     maxWallSeconds: authorization.maxWallSeconds,
     maxTokens: authorization.maxTokens,
     maxCostUsd: authorization.maxCostUsd,
+    tokenBudgetMode: authorization.tokenBudgetMode,
+    providerCostCeilingConfirmed: authorization.providerCostCeilingConfirmed,
   },
   cleanupPreview: {
     status: cleanupPreview.status,

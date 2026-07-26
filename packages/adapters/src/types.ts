@@ -71,6 +71,8 @@ export interface AdapterCapabilities {
 
 export interface AdapterBudgetInput {
   readonly wallMs?: number;
+  readonly maxTokens?: number | null;
+  readonly maxCostUsd?: number | null;
   readonly maxOutputBytes?: number;
   readonly maxRecords?: number;
   readonly maxRecordBytes?: number;

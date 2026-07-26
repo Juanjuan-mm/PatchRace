@@ -985,6 +985,8 @@ export class ComparisonCommandService implements CommandService {
               inheritEnvironment: inheritedAgentEnvironment,
               budgets: {
                 wallMs: loaded.task.budgets.trialSeconds * 1000,
+                maxTokens: loaded.task.budgets.maxTokens,
+                maxCostUsd: loaded.task.budgets.maxCostUsd,
                 maxOutputBytes:
                   loaded.task.budgets.maxOutputBytes ?? 10 * 1024 * 1024,
               },

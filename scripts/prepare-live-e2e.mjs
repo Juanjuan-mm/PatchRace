@@ -109,6 +109,15 @@ const task = {
         cache: "read-only",
         network: "required",
       },
+      {
+        id: "build",
+        kind: "setup",
+        argv: ["pnpm", "build"],
+        timeoutSeconds: 120,
+        expectedExitCodes: [0],
+        cache: "read-only",
+        network: "forbidden",
+      },
     ],
     assets: [
       {

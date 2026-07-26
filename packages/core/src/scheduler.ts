@@ -93,8 +93,8 @@ export async function runScheduledJobs<T>(
   const activeLocks = new Set<string>();
 
   const launch = (job: ScheduledJob<T>): void => {
-    const promise = (async () => {
-      if (job.lockKey !== undefined) activeLocks.add(job.lockKey);
+    if (job.lockKey !== undefined) activeLocks.add(job.lockKey);
+    const promise = Promise.resolve().then(async () => {
       try {
         options.budgets?.reserveTrial();
         const value = await job.run({
@@ -123,7 +123,7 @@ export async function runScheduledJobs<T>(
         if (job.lockKey !== undefined) activeLocks.delete(job.lockKey);
         running.delete(job.id);
       }
-    })();
+    });
     running.set(job.id, promise);
   };
 

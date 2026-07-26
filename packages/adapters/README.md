@@ -8,12 +8,12 @@ compatibility checks, and explicit redacted export.
 
 ## Supported profiles
 
-| Adapter     | Structured command                                        | Supported versions   | Auth behavior                                                                                     |
-| ----------- | --------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------- |
-| Pi CLI      | `pi --mode json --print ...`                              | `>=0.81.0 <0.82.0`   | Official status is unavailable, so probe reports `unknown`; invocation establishes readiness.     |
-| Pi SDK      | Injected official `createAgentSession`-compatible factory | Same Pi range        | Isolated `resourceRoot` is mandatory; Pi CLI JSON is the documented fallback.                     |
-| Claude Code | `claude -p ... --output-format stream-json --verbose`     | `>=2.1.104 <2.2.0`   | Uses `claude auth status`; never reads or copies stored credentials.                              |
-| Codex       | `codex exec --json --sandbox ... -C ...`                  | `>=0.145.0 <0.146.0` | Uses `codex login status`; a broken PATH executable fails instead of silently switching identity. |
+| Adapter     | Structured command                                        | Supported versions   | Auth behavior                                                                                                             |
+| ----------- | --------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Pi CLI      | `pi --mode json --print ...`                              | `>=0.81.0 <0.82.0`   | Official status is unavailable, so probe reports `unknown`; invocation establishes readiness.                             |
+| Pi SDK      | Injected official `createAgentSession`-compatible factory | Same Pi range        | Isolated `resourceRoot` is mandatory; Pi CLI JSON is the documented fallback.                                             |
+| Claude Code | `claude -p ... --output-format stream-json --verbose`     | `>=2.1.104 <2.2.0`   | Uses `claude auth status`; permits the explicit Read/Edit/Write/Bash/Glob/Grep task tool set without interactive prompts. |
+| Codex       | `codex exec --json --sandbox ... -C ...`                  | `>=0.145.0 <0.147.0` | Uses `codex login status`; a broken PATH executable fails instead of silently switching identity.                         |
 
 Exact fixture versions and known degradations are exported as `ADAPTER_COMPATIBILITY` and tested. Unknown or newer versions are not silently treated as compatible.
 
@@ -21,7 +21,7 @@ Exact fixture versions and known degradations are exported as `ADAPTER_COMPATIBI
 
 Call `probe`, then `prepare`, then `run`. `prepare` resolves paths and builds argv without spawning the agent. `run` delegates process ownership, wall/output limits, stream draining, and group termination to `@patchrace/core`. An `AdapterSink` must persist raw chunks before it accepts decoded records; `ArtifactAdapterSink` writes both into the immutable run tree.
 
-Environment values inside `PreparedInvocation` are execution-only and must never be serialized as provenance. Results expose only sorted environment names. Raw records remain `local-sensitive`; normalized events do not fabricate unsupported file, token, cost, model, or timing data.
+Environment values inside `PreparedInvocation` are execution-only and must never be serialized as provenance. Results expose only sorted environment names. Raw records remain `local-sensitive`; normalized events do not fabricate unsupported file, token, cost, model, or timing data. Task token and cost limits are preserved in invocation provenance. Claude Code receives its supported per-invocation cost flag; token usage from these CLIs is reported after execution and therefore gates subsequent admission rather than providing an exact in-flight cutoff.
 
 ## Pi SDK
 

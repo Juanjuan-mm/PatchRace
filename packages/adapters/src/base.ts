@@ -38,6 +38,8 @@ import {
 
 const defaultBudgets = Object.freeze({
   wallMs: 15 * 60 * 1000,
+  maxTokens: null,
+  maxCostUsd: null,
   maxOutputBytes: 16 * 1024 * 1024,
   maxRecords: 10_000,
   maxRecordBytes: 1024 * 1024,
@@ -323,6 +325,7 @@ export abstract class CliAdapter implements AgentAdapter {
     };
     const budgets = { ...defaultBudgets, ...input.budgets };
     for (const [name, value] of Object.entries(budgets)) {
+      if (value === null) continue;
       if (!Number.isFinite(value) || value < 0)
         throw new PatchRaceError({
           code: "ADAPTER_BUDGET_INVALID",

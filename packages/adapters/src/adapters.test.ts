@@ -207,7 +207,7 @@ describe("shared adapter contract", () => {
             files.root,
             files.executable,
             "Complete the shared fixture",
-            {},
+            kind === "claude-code" ? { maxCostUsd: 0.25 } : {},
             version,
           ),
           new AbortController().signal,
@@ -223,6 +223,12 @@ describe("shared adapter contract", () => {
               ? "stream-json"
               : "exec --json",
         );
+        if (kind === "claude-code") {
+          expect(prepared.args).toContain("dontAsk");
+          expect(prepared.args).toContain("Read,Edit,Write,Bash,Glob,Grep");
+          expect(prepared.args).toContain("--max-budget-usd");
+          expect(prepared.args).toContain("0.25");
+        }
         const sink = new MemoryAdapterSink();
         const result = await adapter.run(
           prepared,
