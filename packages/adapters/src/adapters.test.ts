@@ -69,6 +69,8 @@ if (kind === "pi") {
   if (instruction.includes("HANG")) setInterval(() => {}, 1000);
   else {
     emit({ type: "turn_start" });
+    emit({ type: "message_update", message: { role: "assistant", content: [{ type: "text", text: "FIX" }] } });
+    emit({ type: "message_update", message: { role: "assistant", content: [{ type: "text", text: "FIXTURE_OK" }] } });
     emit({ type: "tool_execution_start", toolName: "bash", args: { command: "node --test" } });
     emit({ type: "tool_execution_end", toolName: "bash", exitCode: 0 });
     emit({ type: "message_end", message: { role: "assistant", content: [{ type: "text", text: "FIXTURE_OK" }], usage: { input: 3, output: 2, totalTokens: 5 } } });
@@ -247,6 +249,23 @@ describe("shared adapter contract", () => {
         expect(result.status).toBe("completed");
         expect(result.records.length).toBeGreaterThan(2);
         expect(sink.chunks.length).toBeGreaterThan(0);
+        if (kind === "pi") {
+          expect(
+            result.records.some(
+              (record) => record.vendorType === "message_update",
+            ),
+          ).toBe(false);
+          expect(
+            Buffer.concat(
+              sink.chunks.map(({ bytes }) => Buffer.from(bytes)),
+            ).toString("utf8"),
+          ).toContain('"type":"message_update"');
+          expect(
+            result.records.some(
+              (record) => record.vendorType === "message_end",
+            ),
+          ).toBe(true);
+        }
         expect(await readFile(join(files.root, "message.txt"), "utf8")).toBe(
           "fixed\n",
         );

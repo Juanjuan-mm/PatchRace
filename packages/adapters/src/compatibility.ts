@@ -24,6 +24,7 @@ export const ADAPTER_COMPATIBILITY: Readonly<
       "Authentication readiness is unknown when no official status operation is available.",
       "Cost remains unavailable unless Pi emits it in the structured stream.",
       "Pi does not expose a vendor sandbox equivalent to PatchRace's requested sandbox label.",
+      "Cumulative Pi message_update payloads remain exact in raw stdout but are omitted from structured records; completed messages and usage are retained from message_end.",
     ],
   },
   "claude-code": {

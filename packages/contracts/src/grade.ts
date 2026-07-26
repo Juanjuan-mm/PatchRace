@@ -68,6 +68,7 @@ export interface HiddenVerifierResultV1 {
   readonly schemaVersion: "1.0.0";
   readonly taskHash: ContentHash;
   readonly agentPatchHash: ContentHash;
+  readonly setup: CommandPhaseResultV1;
   readonly injectedAssets: readonly {
     readonly mount: string;
     readonly hash: ContentHash;

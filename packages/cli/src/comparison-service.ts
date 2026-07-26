@@ -1098,37 +1098,43 @@ export class ComparisonCommandService implements CommandService {
             message: null,
           });
           await coordinator.transitionTrial(trial.trialId, "grading");
-          const verifier =
+          const hidden =
             loaded.task.verifier.visibility === "hidden"
-              ? (
-                  await runHiddenVerifier({
-                    task: loaded,
-                    manager,
-                    agentWorktree: worktree,
-                    graderRunId: store.runId,
-                    graderTrialId: createSortableId("trial") as TrialId,
-                    evidenceDirectory: join(
-                      store.runRoot,
-                      "trials",
-                      trial.trialId,
-                      "hidden-verifier",
-                    ),
-                    agentProcessStopped: true,
-                    signal: context.signal,
-                  })
-                ).verifier
-              : await runTaskCommandPhase({
-                  task: loaded.task,
-                  phase: "verifier",
-                  workingDirectory: worktree.path,
-                  evidenceDirectory,
+              ? await runHiddenVerifier({
+                  task: loaded,
+                  manager,
+                  agentWorktree: worktree,
+                  graderRunId: store.runId,
+                  graderTrialId: createSortableId("trial") as TrialId,
+                  evidenceDirectory: join(
+                    store.runRoot,
+                    "trials",
+                    trial.trialId,
+                    "hidden-verifier",
+                  ),
+                  agentProcessStopped: true,
                   signal: context.signal,
-                });
+                })
+              : null;
+          const postPatchSetup = hidden?.setup ?? null;
+          const verifier =
+            hidden?.verifier ??
+            (await runTaskCommandPhase({
+              task: loaded.task,
+              phase: "verifier",
+              workingDirectory: worktree.path,
+              evidenceDirectory,
+              signal: context.signal,
+            }));
           const assertions = await evaluateTaskAssertions({
             task: loaded.task,
             workingDirectory: worktree.path,
             baselineCommit: loaded.task.baseline.commit,
-            commandEvidence: [...setup.commands, ...verifier.commands],
+            commandEvidence: [
+              ...setup.commands,
+              ...(postPatchSetup?.commands ?? []),
+              ...verifier.commands,
+            ],
           });
           const patch = await capturePatch(worktree.path);
           const protectedPaths = new Set(
@@ -1157,7 +1163,8 @@ export class ComparisonCommandService implements CommandService {
             {
               id: "setup",
               status:
-                setup.status === "passed"
+                setup.status === "passed" &&
+                (postPatchSetup === null || postPatchSetup.status === "passed")
                   ? ("passed" as const)
                   : ("failed" as const),
               evidence: [`trials/${trial.trialId}/grade.json`],
@@ -1260,6 +1267,7 @@ export class ComparisonCommandService implements CommandService {
               outcome,
               hardGates,
               setup,
+              ...(postPatchSetup === null ? {} : { postPatchSetup }),
               verifier,
               assertions,
             },

@@ -155,6 +155,9 @@ export abstract class CliAdapter implements AgentAdapter {
   protected abstract vendorErrors(
     records: readonly RawRecord[],
   ): AdapterError[];
+  protected retainStructuredRecord(_record: RawRecord): boolean {
+    return true;
+  }
   protected environmentFor(
     _input: PrepareInput,
     _resolved: {
@@ -388,6 +391,7 @@ export abstract class CliAdapter implements AgentAdapter {
     const records: RawRecord[] = [];
     let sequence = 0;
     const onRecord = async (record: RawRecord): Promise<void> => {
+      if (!this.retainStructuredRecord(record)) return;
       await sink.persistRecord(record);
       records.push(record);
     };

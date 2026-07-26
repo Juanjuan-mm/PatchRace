@@ -110,17 +110,22 @@ function environmentFor(request: ProcessRequest): NodeJS.ProcessEnv {
   return environment;
 }
 
-function signalOwnedProcess(child: ChildProcess, signal: NodeJS.Signals): void {
-  if (
-    child.pid === undefined ||
-    child.exitCode !== null ||
-    child.signalCode !== null
-  )
-    return;
+function signalOwnedProcess(
+  child: ChildProcess,
+  signal: NodeJS.Signals,
+  includeExitedPosixGroup = false,
+): void {
+  if (child.pid === undefined) return;
   try {
     if (process.platform !== "win32") {
+      if (
+        !includeExitedPosixGroup &&
+        (child.exitCode !== null || child.signalCode !== null)
+      )
+        return;
       process.kill(-child.pid, signal);
     } else {
+      if (child.exitCode !== null || child.signalCode !== null) return;
       // Windows has no POSIX process groups. taskkill's explicit PID tree is
       // the platform-equivalent ownership boundary; /F is required because a
       // console CTRL signal cannot be scoped safely to an arbitrary child tree.
@@ -187,7 +192,7 @@ export async function runProcess(
     signalOwnedProcess(child, "SIGTERM");
     if (process.platform !== "win32") {
       forceTimer = setTimeout(
-        () => signalOwnedProcess(child, "SIGKILL"),
+        () => signalOwnedProcess(child, "SIGKILL", true),
         request.terminationGraceMs ?? 2000,
       );
       forceTimer.unref();

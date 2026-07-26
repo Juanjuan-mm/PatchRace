@@ -70,9 +70,9 @@ Historical reconstruction resets to the selected commit's first parent unless pr
 
 ## Setup
 
-Setup runs in the prepared worktree before the agent with no hidden verifier present. Setup steps have IDs, argv/cwd, environment-name allowlist, timeout, expected exit codes, cache policy, and network requirement. They are trusted repository code and onboarding must say they can affect the host.
+Setup runs in the prepared worktree before the agent with no hidden verifier present. For a hidden verifier, the same setup phase is replayed after the exact candidate patch is copied into the grader-only worktree and before any hidden asset is mounted. This reconstructs ignored dependency/build state without exposing hidden material to setup commands. Setup steps have IDs, argv/cwd, environment-name allowlist, timeout, expected exit codes, cache policy, and network requirement. They are trusted repository code and onboarding must say they can affect the host.
 
-Setup output and dependency state are hashed where practical. A failed setup is `task_invalid_or_environment`, not agent failure. Caches cannot contain hidden verifier assets or a reference patch.
+Initial and post-patch setup evidence are recorded independently and both must pass. Setup output and dependency state are hashed where practical. A failed setup is `task_invalid_or_environment`, not agent failure. Caches cannot contain hidden verifier assets or a reference patch.
 
 ## Instruction
 
@@ -87,10 +87,11 @@ After the agent process exits and its process group is confirmed stopped, the gr
 1. verifies task/config/verifier hashes and final agent worktree ownership;
 2. snapshots the agent patch;
 3. creates a grader-only worktree or controlled overlay from that exact snapshot;
-4. injects verifier assets using create-new semantics and rejects path/symlink escapes or collisions;
-5. runs verifier commands with a constructed environment and no vendor auth;
-6. records results and removes only the verified injected paths/grader worktree;
-7. checks the original agent patch did not touch protected scoring/config paths.
+4. replays setup in that grader worktree while no hidden asset is present;
+5. injects verifier assets using create-new semantics and rejects path/symlink escapes or collisions;
+6. runs verifier commands with a constructed environment and no vendor auth;
+7. records results and removes only the verified injected paths/grader worktree;
+8. checks the original agent patch did not touch protected scoring/config paths.
 
 If the platform cannot prevent the agent from seeing hidden assets, hidden verification is unavailable and the task cannot claim leakage-resistant evidence. Agent edits to scoring config or forged result files are hard integrity failures even when tests pass.
 

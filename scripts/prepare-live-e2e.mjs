@@ -217,7 +217,7 @@ const task = {
     graderSeconds: 300,
     maxTokens: 32_768,
     maxCostUsd: null,
-    maxOutputBytes: 128 * 1024 * 1024,
+    maxOutputBytes: 1024 * 1024 * 1024,
     maxRecords: 100_000,
     maxPatchLines: 700,
     maxChangedFiles: 24,

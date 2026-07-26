@@ -70,6 +70,33 @@ describe("runProcess", () => {
     );
   });
 
+  it.skipIf(process.platform === "win32")(
+    "force-kills descendants that retain pipes after the direct child exits",
+    async () => {
+      const directory = await cwd();
+      const result = await runProcess({
+        executable: process.execPath,
+        args: [
+          "-e",
+          [
+            "const { spawn } = require('node:child_process');",
+            "spawn(process.execPath, ['-e', \"process.on('SIGTERM', () => {}); setInterval(() => {}, 1000)\"], { stdio: ['ignore', 'inherit', 'inherit'] });",
+            "process.on('SIGTERM', () => process.exit(0));",
+            "setInterval(() => {}, 1000);",
+          ].join(" "),
+        ],
+        cwd: directory,
+        timeoutMs: 100,
+        terminationGraceMs: 30,
+      });
+      expect(result).toMatchObject({
+        status: "budget_exhausted",
+        terminationReason: "timeout",
+      });
+      expect(result.durationMs).toBeLessThan(2_000);
+    },
+  );
+
   it("honors cancellation", async () => {
     const directory = await cwd();
     await writeFile(join(directory, "unrelated.txt"), "preserve\n");

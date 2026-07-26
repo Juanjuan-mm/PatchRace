@@ -51,7 +51,7 @@ async function fixture(): Promise<{
     cwd: root,
   });
   await mkdir(join(root, "src"));
-  await writeFile(join(root, ".gitignore"), ".patchrace/\n");
+  await writeFile(join(root, ".gitignore"), ".patchrace/\ngenerated.mjs\n");
   await writeFile(join(root, "README.md"), "preserve\n");
   await writeFile(
     join(root, "src", "add.mjs"),
@@ -66,7 +66,7 @@ async function fixture(): Promise<{
   await writeFile(join(bundle, "instruction.md"), "Fix add.\n");
   await mkdir(join(vault, "verifier"));
   const hidden = Buffer.from(
-    "import test from 'node:test'; import assert from 'node:assert/strict'; import { readFile } from 'node:fs/promises'; import { add } from '../../src/add.mjs'; test('hidden', async () => { assert.equal(add(1, 2), 3); assert.equal((await readFile('extra.txt', 'utf8')).trim(), 'agent-extra'); });\n",
+    "import test from 'node:test'; import assert from 'node:assert/strict'; import { readFile } from 'node:fs/promises'; import { add } from '../../src/add.mjs'; import { generated } from '../../generated.mjs'; test('hidden', async () => { assert.equal(add(1, 2), 3); assert.equal(generated, true); assert.equal((await readFile('extra.txt', 'utf8')).trim(), 'agent-extra'); });\n",
   );
   const vaultFile = join(vault, "verifier", "hidden.test.mjs");
   await writeFile(vaultFile, hidden);
@@ -81,7 +81,23 @@ async function fixture(): Promise<{
       lfs: "disabled",
     },
     instruction: { file: "instruction.md", hash: sha256("Fix add.\n") },
-    setup: { commands: [], assets: [] },
+    setup: {
+      commands: [
+        {
+          id: "prepare-generated",
+          kind: "setup",
+          argv: [
+            process.execPath,
+            "-e",
+            "const fs = require('node:fs'); if (fs.existsSync('test/__patchrace__/hidden.test.mjs')) process.exit(2); fs.writeFileSync('generated.mjs', 'export const generated = true;\\n');",
+          ],
+          timeoutSeconds: 10,
+          expectedExitCodes: [0],
+          network: "forbidden",
+        },
+      ],
+      assets: [],
+    },
     verifier: {
       visibility: "hidden",
       assets: [
@@ -159,6 +175,10 @@ describe("runHiddenVerifier", () => {
     });
 
     expect(result).toMatchObject({
+      setup: {
+        status: "passed",
+        commands: [{ id: "prepare-generated", status: "passed" }],
+      },
       verifier: {
         status: "passed",
         commands: [{ id: "hidden-test", status: "passed" }],

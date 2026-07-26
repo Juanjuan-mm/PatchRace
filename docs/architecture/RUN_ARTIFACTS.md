@@ -87,7 +87,7 @@ Repository provenance includes baseline commit, dirty-state refusal/allowance de
 
 ## Raw logs and vendor events
 
-`raw/stdout.log` and `raw/stderr.log` are byte-preserving streams with a sidecar containing encoding, byte count, truncation state, and SHA-256. If the vendor offers JSON/JSONL, unmodified records additionally go to `raw/vendor-events.jsonl`. PatchRace may cap displayed output, but evidence truncation must be declared with original/retained sizes when known.
+`raw/stdout.log` and `raw/stderr.log` are the byte-preserving authority, with a sidecar containing encoding, byte count, truncation state, and SHA-256. If the vendor offers JSON/JSONL, parsed records additionally go to the structured raw-record view. An adapter may omit explicitly declared, transitively redundant records from that view—for example Pi's cumulative `message_update` payloads—only while the exact byte stream, completed message, usage, and non-redundant events remain retained. PatchRace may cap displayed or captured output, but evidence truncation must be declared with original/retained sizes when known.
 
 Raw artifacts are local-sensitive and are not automatically redacted in place. A redacted export is a new tree with its own hashes and redaction manifest.
 

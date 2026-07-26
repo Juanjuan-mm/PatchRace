@@ -151,7 +151,8 @@ async function replay(
       workingDirectory: record.path,
       evidenceDirectory: join(evidenceRoot, "setup"),
     });
-    const setupFingerprint = commandFingerprint(setup.commands);
+    let setupFingerprint = commandFingerprint(setup.commands);
+    let replaySetupStatus = setup.status;
     const stateHash = await setupStateHash(record.path);
     if (setup.status !== "passed") {
       const base = {
@@ -191,25 +192,31 @@ async function replay(
       };
     }
     try {
-      const verifier =
-        options.task.task.verifier.visibility === "hidden"
-          ? (
-              await runHiddenVerifier({
-                task: options.task,
-                manager: options.manager,
-                agentWorktree: record,
-                graderRunId: options.runId,
-                graderTrialId: nextTrialId(),
-                evidenceDirectory: join(evidenceRoot, "verifier"),
-                agentProcessStopped: true,
-              })
-            ).verifier
-          : await runTaskCommandPhase({
-              task: options.task.task,
-              phase: "verifier",
-              workingDirectory: record.path,
-              evidenceDirectory: join(evidenceRoot, "verifier"),
-            });
+      let verifier;
+      if (options.task.task.verifier.visibility === "hidden") {
+        const hidden = await runHiddenVerifier({
+          task: options.task,
+          manager: options.manager,
+          agentWorktree: record,
+          graderRunId: options.runId,
+          graderTrialId: nextTrialId(),
+          evidenceDirectory: join(evidenceRoot, "verifier"),
+          agentProcessStopped: true,
+        });
+        replaySetupStatus = hidden.setup.status;
+        setupFingerprint = commandFingerprint([
+          ...setup.commands,
+          ...hidden.setup.commands,
+        ]);
+        verifier = hidden.verifier;
+      } else {
+        verifier = await runTaskCommandPhase({
+          task: options.task.task,
+          phase: "verifier",
+          workingDirectory: record.path,
+          evidenceDirectory: join(evidenceRoot, "verifier"),
+        });
+      }
       verifierFingerprint = commandFingerprint(verifier.commands);
       const assertions = await evaluateTaskAssertions({
         task: options.task.task,
@@ -217,13 +224,15 @@ async function replay(
         commandEvidence: verifier.commands,
       });
       const outcome: TaskValidityAttemptV1["outcome"] =
-        verifier.status === "passed" && assertions.status === "passed"
+        replaySetupStatus === "passed" &&
+        verifier.status === "passed" &&
+        assertions.status === "passed"
           ? "passed"
           : "failed";
       const base = {
         kind,
         attempt,
-        setupStatus: setup.status,
+        setupStatus: replaySetupStatus,
         verifierStatus: verifier.status,
         assertionStatus: assertions.status,
         outcome,
@@ -243,7 +252,7 @@ async function replay(
       const base = {
         kind,
         attempt,
-        setupStatus: setup.status,
+        setupStatus: replaySetupStatus,
         verifierStatus: "error" as const,
         assertionStatus: "not-run" as const,
         outcome: "not-run" as const,

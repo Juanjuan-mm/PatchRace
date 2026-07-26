@@ -24,10 +24,11 @@ file-content symlink escapes are grader errors.
 Hidden verification requires `loadTask(..., { verifierRoot })` with a verifier
 vault separate from the task directory and repository. `runHiddenVerifier()`
 accepts only a recorded stopped Agent worktree, snapshots tracked and regular
-untracked changes, reproduces them in a detached grader worktree, injects
-hash-verified assets with create-new semantics, executes the verifier, and
-cleans only that recorded grader worktree after evidence is complete. Integrity
-errors retain the grader worktree for inspection.
+untracked changes, reproduces them in a detached grader worktree, replays setup
+before any hidden asset is present, injects hash-verified assets with create-new
+semantics, executes the verifier, and cleans only that recorded grader worktree
+after evidence is complete. Initial and post-patch setup evidence remain
+distinct. Integrity errors retain the grader worktree for inspection.
 
 `mineGitHistory()` performs read-only local commit selection and reconstructs
 each linear parent in a disposable Git worktree. Candidates contain privacy-safe

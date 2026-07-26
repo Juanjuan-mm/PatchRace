@@ -168,6 +168,14 @@ export class PiCliAdapter extends CliAdapter {
     };
   }
 
+  protected override retainStructuredRecord(record: RawRecord): boolean {
+    // Pi's message_update payload contains the cumulative assistant message,
+    // so retaining every update grows quadratically for long turns. The exact
+    // vendor bytes remain append-only in raw/stdout.log; message_end retains
+    // the completed observable message and usage in structured records.
+    return record.vendorType !== "message_update";
+  }
+
   protected override environmentFor(
     _input: PrepareInput,
     resolved: {

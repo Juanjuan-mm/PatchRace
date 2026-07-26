@@ -22,4 +22,8 @@ its exact dependency-field and lockfile protections, and distinguish aggregate
 cost authorization from the single-trial Claude Code ceiling, rejecting any
 observable post-call overage independently. State the public cross-platform
 acceptance matrix directly in the Agent instruction, and grade its verifier from
-an external hidden-verifier worktree.
+an external hidden-verifier worktree. Rebuild post-patch setup state in that
+isolated grader before mounting hidden assets, force-kill POSIX descendants that
+retain output pipes after their direct child exits on timeout, and keep Pi's
+exact raw stream while omitting cumulative message updates from the structured
+record view.

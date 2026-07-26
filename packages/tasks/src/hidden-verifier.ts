@@ -300,6 +300,13 @@ export async function runHiddenVerifier(
     ...(options.now === undefined ? {} : { now: options.now }),
   });
   await copySnapshot(snapshot, grader.path);
+  const setup = await runTaskCommandPhase({
+    task: options.task.task,
+    phase: "setup",
+    workingDirectory: grader.path,
+    evidenceDirectory: options.evidenceDirectory,
+    ...(options.signal === undefined ? {} : { signal: options.signal }),
+  });
   const injectedAssets = await injectAssets(
     options.task,
     options.manager.repositoryRoot,
@@ -321,6 +328,7 @@ export async function runHiddenVerifier(
     schemaVersion: SCHEMA_VERSION,
     taskHash: options.task.taskHash,
     agentPatchHash: snapshot.hash,
+    setup,
     injectedAssets,
     verifier,
     graderWorktreeCleaned: cleanup.removed,

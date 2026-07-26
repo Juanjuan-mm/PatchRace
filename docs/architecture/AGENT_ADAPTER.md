@@ -172,6 +172,10 @@ The accepted contract is implemented in `@patchrace/adapters` without a second p
   JSONL collection, shared `runProcess` integration, lifecycle states,
   cancellation, and common error normalization.
 - `pi.ts`, `claude.ts`, and `codex.ts` contain only vendor command profiles, observable record mapping, metrics, and vendor-specific error classification.
+- Pi's exact byte stream remains in `raw/stdout.log`. Its cumulative
+  `message_update` events are omitted only from the structured-record view to
+  avoid quadratic duplication; `message_end`, usage, and tool events remain
+  structured and the declared raw-output ceiling still applies to every byte.
 - `pi-sdk.ts` requires an isolated candidate resource root and adapts an official Pi session factory; `PiCliAdapter` is its explicit compatibility fallback.
 - `compatibility.ts` is the machine-tested version/degradation matrix. PATH presence alone never establishes readiness.
 - `export.ts` maps normalized traces to redacted local OpenTelemetry OTLP/JSON only after explicit opt-in; it has no transport or publication path.

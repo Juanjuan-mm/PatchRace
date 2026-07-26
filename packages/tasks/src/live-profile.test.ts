@@ -30,7 +30,7 @@ describe("live parity profile", () => {
     );
     expect(source).toContain('visibility: "hidden"');
     expect(source).toContain('paths: [".patchrace-live/**"]');
-    expect(source).toContain("maxOutputBytes: 128 * 1024 * 1024");
+    expect(source).toContain("maxOutputBytes: 1024 * 1024 * 1024");
     expect(source).toContain("maxRecords: 100_000");
   });
 
