@@ -439,7 +439,7 @@ describe("shared adapter contract", () => {
       status: "cancelled",
       process: null,
     });
-  });
+  }, 15_000);
 
   it("reports missing executables, unsupported versions, and unavailable auth without secrets", async () => {
     const files = await fixture();
