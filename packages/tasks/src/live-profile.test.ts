@@ -25,6 +25,13 @@ describe("live parity profile", () => {
     expect(source).toContain(
       "windows-2025, macos-15, macos-15-intel, ubuntu-22.04, ubuntu-24.04, and ubuntu-24.04-arm",
     );
+    expect(source).toContain(
+      'const verifierRoot = join(workspace, "verifier")',
+    );
+    expect(source).toContain('visibility: "hidden"');
+    expect(source).toContain('paths: [".patchrace-live/**"]');
+    expect(source).toContain("maxOutputBytes: 128 * 1024 * 1024");
+    expect(source).toContain("maxRecords: 100_000");
   });
 
   it("keeps aggregate and single-trial live cost ceilings distinct", async () => {
@@ -42,5 +49,6 @@ describe("live parity profile", () => {
     expect(source).not.toContain(
       "authorization.maxCostUsd /\n  (authorization.repeat * authorization.variants.length)",
     );
+    expect(source).toContain('"--verifier-root",\n  verifierRoot');
   });
 });

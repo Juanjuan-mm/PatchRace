@@ -118,7 +118,12 @@ Assertions return `passed|failed|error|skipped`. `error` indicates grader/infras
 
 ## Budgets
 
-Task budgets can tighten but not exceed suite/run safety limits. Wall time, agent time, setup/grader time, trial count, tokens, cost, output bytes, patch size, files changed, and disk may be bounded. Unsupported token/cost enforcement is declared before execution; a monetary budget cannot be claimed enforced when the adapter reports no usable cost signal.
+Task budgets can tighten but not exceed suite/run safety limits. Wall time,
+agent time, setup/grader time, trial count, tokens, cost, output bytes,
+structured record count, patch size, files changed, and disk may be bounded.
+Unsupported token/cost enforcement is declared before execution; a monetary
+budget cannot be claimed enforced when the adapter reports no usable cost
+signal.
 
 Budget exhaustion is a terminal trial state with partial evidence, not an infrastructure crash. Setup/verifier time is reported separately so slow tests are not blamed on the agent.
 

@@ -228,6 +228,15 @@ describe("shared adapter contract", () => {
           expect(prepared.args).toContain("Read,Edit,Write,Bash,Glob,Grep");
           expect(prepared.args).toContain("--max-budget-usd");
           expect(prepared.args).toContain("0.25");
+        } else if (kind === "codex") {
+          const vendorArgs = prepared.args.slice(
+            prepared.executableArgumentCount,
+          );
+          expect(vendorArgs.slice(0, 3)).toEqual([
+            "--ask-for-approval",
+            "never",
+            "exec",
+          ]);
         }
         const sink = new MemoryAdapterSink();
         const result = await adapter.run(

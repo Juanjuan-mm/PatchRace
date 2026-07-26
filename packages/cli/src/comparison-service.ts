@@ -989,6 +989,9 @@ export class ComparisonCommandService implements CommandService {
                 maxCostUsd: loaded.task.budgets.maxCostUsd,
                 maxOutputBytes:
                   loaded.task.budgets.maxOutputBytes ?? 10 * 1024 * 1024,
+                ...(loaded.task.budgets.maxRecords === undefined
+                  ? {}
+                  : { maxRecords: loaded.task.budgets.maxRecords }),
               },
             },
             context.signal,

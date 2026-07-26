@@ -88,6 +88,7 @@ async function fixture(): Promise<{
         trialSeconds: 600,
         maxTokens: null,
         maxCostUsd: null,
+        maxRecords: 25_000,
         maxPatchLines: 100,
       },
       provenance: {
@@ -124,6 +125,7 @@ describe("versioned tasks", () => {
     const second = await loadTask(path);
 
     expect(first.task).toEqual(task);
+    expect(first.task.budgets.maxRecords).toBe(25_000);
     expect(first.referencedFiles.map((entry) => entry.role)).toEqual([
       "instruction",
       "setup",

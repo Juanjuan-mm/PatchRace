@@ -105,6 +105,7 @@ export interface TaskV1 {
     readonly maxTokens: number | null;
     readonly maxCostUsd: number | null;
     readonly maxOutputBytes?: number;
+    readonly maxRecords?: number;
     readonly maxPatchLines: number;
     readonly maxChangedFiles?: number;
     readonly diskMiB?: number;
@@ -369,6 +370,7 @@ export const taskV1Schema = {
         maxTokens: { anyOf: [nonNegative, { type: "null" }] },
         maxCostUsd: { anyOf: [nonNegative, { type: "null" }] },
         maxOutputBytes: nonNegativeInteger,
+        maxRecords: nonNegativeInteger,
         maxPatchLines: nonNegativeInteger,
         maxChangedFiles: nonNegativeInteger,
         diskMiB: nonNegativeInteger,

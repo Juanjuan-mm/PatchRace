@@ -372,6 +372,7 @@
           "anyOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
         },
         "maxOutputBytes": { "type": "integer", "minimum": 0 },
+        "maxRecords": { "type": "integer", "minimum": 0 },
         "maxPatchLines": { "type": "integer", "minimum": 0 },
         "maxChangedFiles": { "type": "integer", "minimum": 0 },
         "diskMiB": { "type": "integer", "minimum": 0 }

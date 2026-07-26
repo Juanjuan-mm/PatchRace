@@ -98,6 +98,11 @@ for (const variant of variants)
 
 const project = resolve(prepared.project);
 const liveRoot = resolve(project, ".patchrace", "live");
+assert(
+  typeof prepared.verifierRoot === "string" && prepared.verifierRoot.length > 0,
+  "Prepared workspace does not declare its external verifier vault.",
+);
+const verifierRoot = resolve(prepared.verifierRoot);
 const taskPath = resolve(liveRoot, "task.json");
 const task = JSON.parse(readFileSync(taskPath, "utf8"));
 task.budgets.maxTokens = Math.floor(
@@ -247,6 +252,8 @@ const raced = invoke([
   variants.map(({ id }) => id).join(","),
   "--repeat",
   String(authorization.repeat),
+  "--verifier-root",
+  verifierRoot,
 ]);
 assert(raced.status === "completed", "Live race did not complete.");
 const report = raced.data?.report;

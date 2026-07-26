@@ -41,7 +41,9 @@ run(
 );
 const commit = run("git", ["rev-parse", "HEAD"], project);
 const liveRoot = join(project, ".patchrace", "live");
+const verifierRoot = join(workspace, "verifier");
 await mkdir(liveRoot, { recursive: true });
+await mkdir(verifierRoot, { recursive: true });
 
 const instruction = `PatchRace currently supports Node 22.22+ and Node 24. Add complete Node 26 support without dropping either LTS line.
 
@@ -106,7 +108,7 @@ for (const value of [
   if (!workflow.includes(value)) throw new Error(\`CI matrix omits \${value}\`);
 `;
 const instructionPath = join(liveRoot, "instruction.md");
-const verifierPath = join(liveRoot, "verify-node26.mjs");
+const verifierPath = join(verifierRoot, "verify-node26.mjs");
 await writeFile(instructionPath, instruction);
 await writeFile(verifierPath, verifier);
 
@@ -145,6 +147,10 @@ const task = {
         network: "forbidden",
       },
     ],
+    assets: [],
+  },
+  verifier: {
+    visibility: "hidden",
     assets: [
       {
         source: "verify-node26.mjs",
@@ -152,10 +158,6 @@ const task = {
         hash: sha256(verifier),
       },
     ],
-  },
-  verifier: {
-    visibility: "public",
-    assets: [],
     commands: [
       {
         id: "node26-contract",
@@ -197,7 +199,7 @@ const task = {
     {
       id: "verifiers-protected",
       kind: "protected-paths",
-      paths: [".patchrace-live"],
+      paths: [".patchrace-live/**"],
     },
     {
       id: "bounded-change",
@@ -215,7 +217,8 @@ const task = {
     graderSeconds: 300,
     maxTokens: 32_768,
     maxCostUsd: null,
-    maxOutputBytes: 16 * 1024 * 1024,
+    maxOutputBytes: 128 * 1024 * 1024,
+    maxRecords: 100_000,
     maxPatchLines: 700,
     maxChangedFiles: 24,
     diskMiB: 2048,
@@ -251,6 +254,7 @@ const summary = {
   workspace,
   project,
   task: join(liveRoot, "task.json"),
+  verifierRoot,
   providerCalls: false,
 };
 await writeFile(

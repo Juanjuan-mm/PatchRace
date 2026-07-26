@@ -104,8 +104,13 @@ const cases = [
     expectedVersion: "0.145.0",
     checks: [
       {
-        args: ["exec", "--help"],
+        args: ["--help"],
+        contains: ["--ask-for-approval <APPROVAL_POLICY>"],
+      },
+      {
+        args: ["--ask-for-approval", "never", "exec", "--help"],
         contains: [
+          "Run Codex non-interactively",
           "--json",
           "--sandbox <SANDBOX_MODE>",
           "--ephemeral",

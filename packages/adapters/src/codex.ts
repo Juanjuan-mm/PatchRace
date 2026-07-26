@@ -179,12 +179,12 @@ export class CodexAdapter extends CliAdapter {
   > {
     const sandbox = input.sandboxMode ?? "workspace-write";
     const args = [
+      "--ask-for-approval",
+      "never",
       "exec",
       "--json",
       "--sandbox",
       sandbox,
-      "--ask-for-approval",
-      "never",
       "-C",
       resolved.cwd,
     ];
