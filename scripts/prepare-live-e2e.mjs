@@ -45,7 +45,7 @@ await mkdir(liveRoot, { recursive: true });
 
 const instruction = `PatchRace currently supports Node 22.22+ and Node 24. Add complete Node 26 support without dropping either LTS line.
 
-Update every public package engine, runtime doctor behavior and remediation, the provider-free platform verifier, the GitHub Actions platform matrix, and the relevant public platform/development documentation. Add or update deterministic regression coverage. Keep the dependency graph and lockfile unchanged, preserve exact platform labels, and do not weaken any release, security, privacy, or cleanup gate.
+Update every public package engine, runtime doctor behavior and remediation, the provider-free platform verifier, the GitHub Actions platform matrix, and the relevant public platform/development documentation. The release matrix must cover Node 22.22, 24, and 26 on windows-2025, macos-15, macos-15-intel, ubuntu-22.04, ubuntu-24.04, and ubuntu-24.04-arm as applicable. Add or update deterministic regression coverage. Keep the dependency graph and lockfile unchanged, preserve those exact platform labels, and do not weaken any release, security, privacy, or cleanup gate.
 `;
 const verifier = `import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";

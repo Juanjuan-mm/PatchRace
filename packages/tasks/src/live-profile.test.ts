@@ -22,6 +22,9 @@ describe("live parity profile", () => {
     expect(source).toContain("allowDependencyChanges: true");
     expect(source).toContain("allowLockfileChanges: false");
     expect(source).toContain("/Node 22.*24.*26/u");
+    expect(source).toContain(
+      "windows-2025, macos-15, macos-15-intel, ubuntu-22.04, ubuntu-24.04, and ubuntu-24.04-arm",
+    );
   });
 
   it("keeps aggregate and single-trial live cost ceilings distinct", async () => {

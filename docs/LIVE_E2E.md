@@ -55,8 +55,10 @@ Claude Code, and Codex on the same nontrivial repository task. The task starts
 from the public `v0.1.0-rc.2` PatchRace TypeScript monorepo and asks each Agent
 to implement complete Node 26 support across package metadata, runtime doctor
 behavior, platform verification, CI, documentation, and regression coverage.
-This is a seeded regression on a real repository, not an upstream issue
-benchmark.
+The instruction names the exact Windows 2025, macOS 15 Apple/Intel, Ubuntu
+22.04/24.04 x64, Ubuntu 24.04 ARM, and Node 22.22/24/26 matrix expected by the
+public verifier. This is a seeded regression on a real repository, not an
+upstream issue benchmark.
 
 Preparation is provider-free:
 
