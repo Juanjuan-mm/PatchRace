@@ -19,6 +19,7 @@ structured-record budget so verbose structured Agent streams can be bounded
 without prematurely exhausting the default.
 Keep the live parity profile's required package-engine edits independent from
 its exact dependency-field and lockfile protections, and distinguish aggregate
-cost authorization from the enforceable single-trial Claude Code ceiling. State
-the public cross-platform acceptance matrix directly in the Agent instruction,
-and grade its verifier from an external hidden-verifier worktree.
+cost authorization from the single-trial Claude Code ceiling, rejecting any
+observable post-call overage independently. State the public cross-platform
+acceptance matrix directly in the Agent instruction, and grade its verifier from
+an external hidden-verifier worktree.

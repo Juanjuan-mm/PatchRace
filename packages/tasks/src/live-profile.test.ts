@@ -46,6 +46,7 @@ describe("live parity profile", () => {
     expect(source).toContain(
       "task.budgets.maxCostUsd = authorization.maxSingleTrialCostUsd",
     );
+    expect(source).toContain("value <= authorization.maxSingleTrialCostUsd");
     expect(source).not.toContain(
       "authorization.maxCostUsd /\n  (authorization.repeat * authorization.variants.length)",
     );

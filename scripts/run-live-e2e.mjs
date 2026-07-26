@@ -290,6 +290,10 @@ const observedCosts = report.trials
   .map((trial) => trial.metrics?.costUsd?.value)
   .filter((value) => Number.isFinite(value));
 assert(
+  observedCosts.every((value) => value <= authorization.maxSingleTrialCostUsd),
+  "Observed live trial cost exceeded the single-trial authorization.",
+);
+assert(
   observedCosts.reduce((sum, value) => sum + value, 0) <=
     authorization.maxCostUsd,
   "Observed live cost exceeded authorization.",
