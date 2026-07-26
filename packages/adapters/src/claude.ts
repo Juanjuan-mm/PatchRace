@@ -175,6 +175,7 @@ export class ClaudeCodeAdapter extends CliAdapter {
     | "variantHash"
     | "cwd"
     | "instructionHash"
+    | "executableArgumentCount"
     | "inheritEnvironment"
     | "environment"
     | "environmentNames"

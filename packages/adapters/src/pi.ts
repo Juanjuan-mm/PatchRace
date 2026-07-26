@@ -205,6 +205,7 @@ export class PiCliAdapter extends CliAdapter {
     | "variantHash"
     | "cwd"
     | "instructionHash"
+    | "executableArgumentCount"
     | "inheritEnvironment"
     | "environment"
     | "environmentNames"

@@ -114,6 +114,8 @@ export interface PreparedInvocation {
   readonly taskHash: `sha256:${string}`;
   readonly variantHash: `sha256:${string}`;
   readonly executable: string;
+  /** Number of execution-only prefix arguments at the start of args. */
+  readonly executableArgumentCount: number;
   readonly args: readonly string[];
   readonly cwd: string;
   readonly instructionHash: `sha256:${string}`;

@@ -102,7 +102,10 @@ function parseWorktrees(output: string): readonly GitWorktree[] {
   for (const field of output.split("\0")) {
     if (field === "") {
       if (current.path !== undefined)
-        records.push({ path: current.path, head: current.head ?? null });
+        records.push({
+          path: resolve(current.path),
+          head: current.head ?? null,
+        });
       current = {};
     } else if (field.startsWith("worktree "))
       current.path = field.slice("worktree ".length);

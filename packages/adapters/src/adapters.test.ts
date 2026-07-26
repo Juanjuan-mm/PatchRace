@@ -98,16 +98,26 @@ if (kind === "pi") {
 if (!instruction.includes("HANG")) fs.writeFileSync("message.txt", "fixed\\n");
 `;
 
-async function fixture(): Promise<{ root: string; executable: string }> {
+async function fixture(): Promise<{
+  root: string;
+  executable: string;
+  executableArgs: readonly string[];
+  script: string;
+}> {
   const root = await mkdtemp(join(tmpdir(), "patchrace-adapters-"));
   roots.push(root);
-  const executable = join(root, "fixture-agent.cjs");
-  await writeFile(executable, fixtureCli);
-  await chmod(executable, 0o755);
+  const script = join(root, "fixture-agent.cjs");
+  await writeFile(script, fixtureCli);
+  await chmod(script, 0o755);
   await writeFile(join(root, "message.txt"), "broken\n");
   await mkdir(join(root, "resources"));
   await mkdir(join(root, "sessions"));
-  return { root, executable };
+  return {
+    root,
+    executable: process.execPath,
+    executableArgs: [script],
+    script,
+  };
 }
 
 function prepareInput(
@@ -120,6 +130,7 @@ function prepareInput(
 ): PrepareInput {
   return {
     executable,
+    executableArgs: [join(root, "fixture-agent.cjs")],
     trialId:
       `trial_0000000000000000000000000${kind === "pi" ? "0" : kind === "claude-code" ? "1" : "2"}` as TrialId,
     taskHash: canonicalHash({ fixture: "shared" }),
@@ -178,6 +189,7 @@ describe("shared adapter contract", () => {
         const probe = await adapter.probe(
           {
             executable: files.executable,
+            executableArgs: files.executableArgs,
             cwd: files.root,
             environment: { FIXTURE_KIND: kind, FIXTURE_VERSION: version },
           },
@@ -243,7 +255,7 @@ describe("shared adapter contract", () => {
   it("supports explicit executable prefix arguments for cross-platform script CLIs", async () => {
     const files = await fixture();
     const adapter = new PiCliAdapter();
-    const executableArgs = [files.executable];
+    const executableArgs = files.executableArgs;
     const probe = await adapter.probe(
       {
         executable: process.execPath,
@@ -267,7 +279,7 @@ describe("shared adapter contract", () => {
       { ...input, executableArgs },
       new AbortController().signal,
     );
-    expect(prepared.args[0]).toBe(files.executable);
+    expect(prepared.args[0]).toBe(files.script);
     const result = await adapter.run(
       prepared,
       new MemoryAdapterSink(),
@@ -436,6 +448,7 @@ describe("shared adapter contract", () => {
     const unsupported = await new ClaudeCodeAdapter().probe(
       {
         executable: files.executable,
+        executableArgs: files.executableArgs,
         cwd: files.root,
         environment: {
           FIXTURE_KIND: "claude-code",
@@ -451,6 +464,7 @@ describe("shared adapter contract", () => {
     const malformed = await new PiCliAdapter().probe(
       {
         executable: files.executable,
+        executableArgs: files.executableArgs,
         cwd: files.root,
         environment: { FIXTURE_KIND: "pi", FIXTURE_VERSION: "not-a-version" },
       },
@@ -463,6 +477,7 @@ describe("shared adapter contract", () => {
     const missingAuth = await new ClaudeCodeAdapter().probe(
       {
         executable: files.executable,
+        executableArgs: files.executableArgs,
         cwd: files.root,
         environment: {
           FIXTURE_KIND: "claude-code",

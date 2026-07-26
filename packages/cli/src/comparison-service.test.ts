@@ -184,6 +184,7 @@ describe("comparison CLI service", () => {
   it("runs a configured local race through adapter, grader, artifacts, terminal separation, and report regeneration", async () => {
     const root = await mkdtemp(join(tmpdir(), "patchrace-cli-race-"));
     await exec("git", ["init", "-q", "-b", "main"], { cwd: root });
+    await exec("git", ["config", "core.autocrlf", "false"], { cwd: root });
     await exec("git", ["config", "user.name", "PatchRace Fixture"], {
       cwd: root,
     });
@@ -296,7 +297,13 @@ if (await readFile("target.txt", "utf8") !== "changed\\n") process.exit(1);
             diskMiB: 64,
           },
         },
-        adapters: { pi: { kind: "pi", executable: fakeAgent } },
+        adapters: {
+          pi: {
+            kind: "pi",
+            executable: process.execPath,
+            args: [fakeAgent],
+          },
+        },
         variants: {
           "pi-local": { adapter: "pi", model: null, harness: {}, workflow: {} },
           "pi-second": {
@@ -368,6 +375,7 @@ if (await readFile("target.txt", "utf8") !== "changed\\n") process.exit(1);
     const invocation = JSON.parse(invocationText) as {
       args: string[];
       authState: string;
+      executableArgumentHashes: string[];
       executablePathHash: string;
       environmentNames: string[];
       version: string | null;
@@ -378,6 +386,9 @@ if (await readFile("target.txt", "utf8") !== "changed\\n") process.exit(1);
       version: "0.81.1",
     });
     expect(invocation.executablePathHash).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(invocation.executableArgumentHashes).toEqual([
+      expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
+    ]);
     expect(
       invocation.args.some((argument) => argument.includes(instruction)),
     ).toBe(false);

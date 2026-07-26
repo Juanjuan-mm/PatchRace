@@ -1,4 +1,7 @@
 import { spawn } from "node:child_process";
+import { constants } from "node:fs";
+import { access, lstat, readFile, realpath } from "node:fs/promises";
+import { delimiter, dirname, join } from "node:path";
 
 import type { CommandResult } from "@patchrace/core";
 
@@ -32,6 +35,88 @@ export interface PatchRaceProcessLauncher {
   }): Promise<PatchRaceProcessResult>;
 }
 
+interface ProcessCommand {
+  readonly executable: string;
+  readonly arguments: readonly string[];
+}
+
+interface ProcessLauncherRuntime {
+  readonly platform: NodeJS.Platform;
+  readonly pathEntries: readonly string[];
+}
+
+async function npmShimEntry(shim: string): Promise<string | null> {
+  const packageRoot = join(dirname(shim), "node_modules", "patchrace");
+  const manifestPath = join(packageRoot, "package.json");
+  const entry = join(packageRoot, "dist", "main.js");
+  try {
+    const [rootInfo, manifestInfo, entryInfo, manifest] = await Promise.all([
+      lstat(packageRoot),
+      lstat(manifestPath),
+      lstat(entry),
+      readFile(manifestPath, "utf8"),
+    ]);
+    if (
+      rootInfo.isSymbolicLink() ||
+      !rootInfo.isDirectory() ||
+      manifestInfo.isSymbolicLink() ||
+      !manifestInfo.isFile() ||
+      entryInfo.isSymbolicLink() ||
+      !entryInfo.isFile()
+    )
+      return null;
+    const parsed = JSON.parse(manifest) as {
+      readonly name?: string;
+      readonly bin?: Readonly<Record<string, string>>;
+    };
+    if (
+      parsed.name !== "patchrace" ||
+      parsed.bin?.["patchrace"] !== "./dist/main.js"
+    )
+      return null;
+    return await realpath(entry);
+  } catch {
+    return null;
+  }
+}
+
+async function resolveProcessCommand(
+  executable: string,
+  arguments_: readonly string[],
+  runtime: ProcessLauncherRuntime,
+): Promise<ProcessCommand> {
+  if (runtime.platform !== "win32" || executable !== "patchrace")
+    return { executable, arguments: arguments_ };
+  for (const directory of runtime.pathEntries) {
+    const native = join(directory, "patchrace.exe");
+    if (
+      await access(native, constants.X_OK).then(
+        () => true,
+        () => false,
+      )
+    )
+      return { executable: native, arguments: arguments_ };
+    const shim = join(directory, "patchrace.cmd");
+    if (
+      !(await access(shim, constants.F_OK).then(
+        () => true,
+        () => false,
+      ))
+    )
+      continue;
+    const entry = await npmShimEntry(shim);
+    if (entry === null)
+      throw new Error(
+        "The Windows patchrace.cmd shim is not backed by the expected audited npm package.",
+      );
+    return {
+      executable: process.execPath,
+      arguments: [entry, ...arguments_],
+    };
+  }
+  return { executable, arguments: arguments_ };
+}
+
 function appendBounded(current: string, chunk: Buffer): string {
   const next = current + chunk.toString("utf8");
   if (Buffer.byteLength(next) > MAX_OUTPUT_BYTES)
@@ -42,15 +127,31 @@ function appendBounded(current: string, chunk: Buffer): string {
 }
 
 export class NodePatchRaceProcessLauncher implements PatchRaceProcessLauncher {
-  run(options: {
+  readonly #runtime: ProcessLauncherRuntime;
+
+  constructor(runtime: Partial<ProcessLauncherRuntime> = {}) {
+    this.#runtime = {
+      platform: runtime.platform ?? process.platform,
+      pathEntries:
+        runtime.pathEntries ??
+        (process.env["PATH"] ?? "").split(delimiter).filter(Boolean),
+    };
+  }
+
+  async run(options: {
     readonly executable: string;
     readonly arguments: readonly string[];
     readonly cwd: string;
     readonly signal?: AbortSignal;
     readonly onStderr?: (text: string) => void;
   }): Promise<PatchRaceProcessResult> {
+    const command = await resolveProcessCommand(
+      options.executable,
+      options.arguments,
+      this.#runtime,
+    );
     return new Promise((resolve, reject) => {
-      const child = spawn(options.executable, [...options.arguments], {
+      const child = spawn(command.executable, [...command.arguments], {
         cwd: options.cwd,
         env: process.env,
         shell: false,
@@ -135,6 +236,7 @@ export class CliPatchRaceBridge implements PatchRaceBridge {
   constructor(
     private readonly executable = "patchrace",
     private readonly launcher: PatchRaceProcessLauncher = new NodePatchRaceProcessLauncher(),
+    private readonly executableArguments: readonly string[] = [],
   ) {}
 
   async execute(invocation: PatchRaceInvocation): Promise<CommandResult> {
@@ -142,6 +244,7 @@ export class CliPatchRaceBridge implements PatchRaceBridge {
     const result = await this.launcher.run({
       executable: this.executable,
       arguments: [
+        ...this.executableArguments,
         "--json",
         "--project",
         invocation.cwd,

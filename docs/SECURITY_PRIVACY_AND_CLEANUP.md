@@ -29,6 +29,9 @@ Review and explicitly authorize:
 PatchRace uses executable/argument arrays without a shell for normal process
 launches. An explicitly declared trusted-shell grader remains arbitrary
 host-executable code. A warning or worktree does not make malicious code safe.
+On Windows, the Pi extension validates the exact adjacent npm package behind
+`patchrace.cmd` and invokes its JavaScript entry with Node instead of evaluating
+the shim in `cmd.exe`.
 
 Agent CLIs use their normal local authentication and vendor behavior. PatchRace
 probes normalized readiness such as `ready`, `missing`, `expired`, or `unknown`;

@@ -1,4 +1,11 @@
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -116,8 +123,9 @@ process.stdout.write(JSON.stringify({
     const progress: string[] = [];
 
     const result = await new CliPatchRaceBridge(
-      executable,
+      process.execPath,
       new NodePatchRaceProcessLauncher(),
+      [executable],
     ).execute({
       cwd: root,
       arguments: ["doctor", "; touch shell-injection"],
@@ -137,5 +145,40 @@ process.stdout.write(JSON.stringify({
     expect(await readFile(join(root, "sentinel.txt"), "utf8")).toBe(
       "preserve\n",
     );
+  });
+
+  it("resolves the audited npm shim without executing cmd.exe on Windows", async () => {
+    const root = await mkdtemp(join(tmpdir(), "patchrace-pi-windows-shim-"));
+    roots.push(root);
+    const packageRoot = join(root, "node_modules", "patchrace");
+    const entry = join(packageRoot, "dist", "main.js");
+    await mkdir(join(packageRoot, "dist"), { recursive: true });
+    await writeFile(join(root, "patchrace.cmd"), "@echo off\r\n");
+    await writeFile(
+      join(packageRoot, "package.json"),
+      JSON.stringify({
+        name: "patchrace",
+        bin: { patchrace: "./dist/main.js" },
+      }),
+    );
+    await writeFile(
+      entry,
+      `process.stdout.write(JSON.stringify({
+  schemaVersion: "1.0.0",
+  ok: true,
+  command: "doctor",
+  status: "completed",
+  sideEffects: []
+}) + "\\n");
+`,
+    );
+    const result = await new CliPatchRaceBridge(
+      "patchrace",
+      new NodePatchRaceProcessLauncher({
+        platform: "win32",
+        pathEntries: [root],
+      }),
+    ).execute({ cwd: root, arguments: ["doctor"] });
+    expect(result).toMatchObject({ command: "doctor", status: "completed" });
   });
 });

@@ -1006,11 +1006,16 @@ export class ComparisonCommandService implements CommandService {
               executablePathHash: sha256(prepared.executable),
               version: adapterEntry.probe.version.normalized,
               authState: adapterEntry.probe.auth.state,
-              args: prepared.args.map((argument) =>
-                argument === instruction
-                  ? `[PROMPT:${prepared.instructionHash}]`
-                  : argument,
-              ),
+              executableArgumentHashes: prepared.args
+                .slice(0, prepared.executableArgumentCount)
+                .map((argument) => sha256(argument)),
+              args: prepared.args
+                .slice(prepared.executableArgumentCount)
+                .map((argument) =>
+                  argument === instruction
+                    ? `[PROMPT:${prepared.instructionHash}]`
+                    : argument,
+                ),
               worktree: `worktrees/${store.runId}/${trial.trialId}`,
               environmentNames: prepared.environmentNames,
               model: prepared.model ?? null,

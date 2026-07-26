@@ -158,6 +158,7 @@ async function materialize(recipe: ReferenceRecipe): Promise<MaterializedTask> {
     mkdir(evidence, { recursive: true }),
   ]);
   await git(root, ["init", "-q", "-b", "main"]);
+  await git(root, ["config", "core.autocrlf", "false"]);
   await git(root, ["config", "user.name", "PatchRace Fixture"]);
   await git(root, ["config", "user.email", "fixture@example.invalid"]);
   await writeFile(join(root, ".gitignore"), ".patchrace/\n.reference-init/\n");

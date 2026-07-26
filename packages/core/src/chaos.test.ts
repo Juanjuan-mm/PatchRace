@@ -46,6 +46,7 @@ async function repository(): Promise<{ root: string; commit: string }> {
   const root = await mkdtemp(join(tmpdir(), "patchrace-chaos-repository-"));
   roots.push(root);
   await execute("git", ["init", "-q", root]);
+  await execute("git", ["-C", root, "config", "core.autocrlf", "false"]);
   await writeFile(join(root, ".gitignore"), ".patchrace/\n");
   await writeFile(join(root, "message.txt"), "baseline\n");
   await execute("git", ["-C", root, "add", "."]);

@@ -15,6 +15,9 @@ pi install npm:pi-patchrace@0.1.0
 ```
 
 The `patchrace@0.1.0` CLI must also be available on PATH.
+On Windows, the extension recognizes the shim produced by the documented npm
+global installation, validates its adjacent `patchrace` package and bin entry,
+and invokes that entry with Node without shell interpretation.
 
 ## Project-local development
 

@@ -47,9 +47,13 @@ frozen install. Each cell emits a machine-readable environment/check summary
 under `.artifacts/qa-platform/`.
 
 Windows uses an explicit executable plus argument prefix for script-backed test
-CLIs. Timed-out Windows Agent processes are terminated through the exact child
-PID tree; Unix hosts use a dedicated process group. The same descendant and
-unrelated-process chaos regression runs on every platform.
+CLIs. The Pi extension validates an npm-installed `patchrace.cmd` against the
+adjacent `patchrace` package manifest and launches its JavaScript entry with
+Node, without evaluating the command shim or user arguments in a shell.
+Timed-out Windows Agent processes are terminated through the exact child PID
+tree; Unix hosts use a dedicated process group. The same descendant,
+unrelated-process, Git-path, newline, and no-follow ownership regressions run
+on every platform.
 
 ## Evidence boundary
 

@@ -140,6 +140,7 @@ export abstract class CliAdapter implements AgentAdapter {
     | "variantHash"
     | "cwd"
     | "instructionHash"
+    | "executableArgumentCount"
     | "inheritEnvironment"
     | "environment"
     | "environmentNames"
@@ -347,6 +348,7 @@ export abstract class CliAdapter implements AgentAdapter {
       environmentNames: Object.keys(environment).sort(),
       budgets,
       ...specific,
+      executableArgumentCount: input.executableArgs?.length ?? 0,
       args: [...(input.executableArgs ?? []), ...specific.args],
     };
   }

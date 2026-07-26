@@ -171,6 +171,7 @@ export class CodexAdapter extends CliAdapter {
     | "variantHash"
     | "cwd"
     | "instructionHash"
+    | "executableArgumentCount"
     | "inheritEnvironment"
     | "environment"
     | "environmentNames"

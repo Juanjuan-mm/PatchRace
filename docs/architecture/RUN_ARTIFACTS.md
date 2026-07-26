@@ -72,7 +72,9 @@ Hostnames, usernames, absolute home paths, credential locations, and environment
 `invocation.json` records:
 
 - executable logical name, resolved executable path hash, version output, adapter contract version;
-- argv with prompt bodies replaced by content hashes and secrets replaced by named redaction markers;
+- vendor argv with prompt bodies replaced by content hashes and secrets replaced
+  by named redaction markers; execution-only prefix arguments are represented
+  by ordered SHA-256 hashes so local interpreter/script paths are not copied;
 - working directory as run-relative logical path;
 - inherited/passed environment variable names only;
 - auth state `ready|missing|expired|unknown`, never tokens or token-file contents;

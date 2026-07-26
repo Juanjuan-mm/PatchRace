@@ -139,13 +139,55 @@ export async function openRegularFileNoFollow(
   options: { readonly label?: string; readonly mode?: number } = {},
 ): Promise<FileHandle> {
   const label = options.label ?? path;
+  let before = await lstat(path).catch((error: unknown) => {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  });
+  if (
+    before !== null &&
+    (before.isSymbolicLink() || !before.isFile() || before.nlink !== 1)
+  ) {
+    throw new PatchRaceError({
+      code: "PATH_FILE_UNSAFE",
+      category: "SAFETY",
+      message:
+        "Owned file must be a non-symlink regular file with exactly one hard link.",
+      path: label,
+    });
+  }
   let handle: FileHandle;
   try {
-    handle = await open(
-      path,
-      flags | (constants.O_NOFOLLOW ?? 0),
-      options.mode ?? 0o600,
-    );
+    if (before === null && (flags & constants.O_CREAT) !== 0) {
+      try {
+        handle = await open(
+          path,
+          flags | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+          options.mode ?? 0o600,
+        );
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+        before = await lstat(path);
+        if (before.isSymbolicLink() || !before.isFile() || before.nlink !== 1)
+          throw new PatchRaceError({
+            code: "PATH_FILE_UNSAFE",
+            category: "SAFETY",
+            message:
+              "Owned file must be a non-symlink regular file with exactly one hard link.",
+            path: label,
+          });
+        handle = await open(
+          path,
+          flags | (constants.O_NOFOLLOW ?? 0),
+          options.mode ?? 0o600,
+        );
+      }
+    } else {
+      handle = await open(
+        path,
+        flags | (constants.O_NOFOLLOW ?? 0),
+        options.mode ?? 0o600,
+      );
+    }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ELOOP") throw error;
     throw new PatchRaceError(
@@ -160,7 +202,18 @@ export async function openRegularFileNoFollow(
   }
   try {
     const info = await handle.stat();
-    if (!info.isFile() || info.nlink !== 1)
+    const after = await lstat(path);
+    if (
+      !info.isFile() ||
+      info.nlink !== 1 ||
+      after.isSymbolicLink() ||
+      !after.isFile() ||
+      after.nlink !== 1 ||
+      (before !== null &&
+        (before.dev !== info.dev || before.ino !== info.ino)) ||
+      after.dev !== info.dev ||
+      after.ino !== info.ino
+    )
       throw new PatchRaceError({
         code: "PATH_FILE_UNSAFE",
         category: "SAFETY",
