@@ -128,9 +128,9 @@ function validateEnvironment() {
     capture: true,
     cwd: repositoryRoot,
   });
-  if (pnpmVersion !== "10.34.5") {
+  if (pnpmVersion !== "11.4.0") {
     throw new Error(
-      `PatchRace requires the pinned pnpm 10.34.5; received ${pnpmVersion}.`,
+      `PatchRace requires the pinned pnpm 11.4.0; received ${pnpmVersion}.`,
     );
   }
 

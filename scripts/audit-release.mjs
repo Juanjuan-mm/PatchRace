@@ -14,13 +14,14 @@ const assert = (condition, message) => {
 
 const rootManifest = JSON.parse(read("package.json"));
 assert(
-  /^pnpm@10\.34\.5\+sha512\./u.test(rootManifest.packageManager),
+  /^pnpm@11\.4\.0\+sha512\.[a-f0-9]{128}$/u.test(rootManifest.packageManager),
   "pnpm is not exact integrity-pinned",
 );
+const workspace = parse(read("pnpm-workspace.yaml"));
 assert(
-  rootManifest.pnpm?.minimumReleaseAge === 1440 &&
-    Array.isArray(rootManifest.pnpm?.onlyBuiltDependencies) &&
-    rootManifest.pnpm.onlyBuiltDependencies.length === 0,
+  workspace.minimumReleaseAge === 1440 &&
+    Object.keys(workspace.allowBuilds ?? {}).length === 0 &&
+    workspace.blockExoticSubdeps === true,
   "release-age or lifecycle-script policy drifted",
 );
 assert(

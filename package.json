@@ -16,7 +16,7 @@
   "engines": {
     "node": ">=22.22.0 <27"
   },
-  "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
+  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f",
   "scripts": {
     "build": "tsc -b && node scripts/write-core-schemas.mjs",
     "clean": "tsc -b --clean",
@@ -68,9 +68,5 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.65.0",
     "vitest": "4.1.10"
-  },
-  "pnpm": {
-    "minimumReleaseAge": 1440,
-    "onlyBuiltDependencies": []
   }
 }

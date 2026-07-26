@@ -136,7 +136,7 @@ corepack pnpm install --frozen-lockfile
 corepack pnpm check
 ```
 
-The repository pins pnpm `10.34.5` with integrity. Do not rewrite
+The repository pins pnpm `11.4.0` with integrity. Do not rewrite
 `packageManager`, bypass the frozen lockfile, or enable dependency lifecycle
 scripts to repair an install.
 

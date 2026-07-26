@@ -23,7 +23,7 @@ floating `*-latest` aliases. Node 22 is Maintenance LTS, Node 24 is Active LTS,
 and Node 26 is Current as of this release; Node 20, 23, and 25 are EOL.
 
 Ordinary users install with npm. The pinned Corepack `0.35.0` and pnpm
-`10.34.5` toolchain applies only to source development and release
+`11.4.0` toolchain applies only to source development and release
 verification.
 
 ## Per-cell acceptance

@@ -1,16 +1,19 @@
 # Dependency and Supply-Chain Controls
 
-Last updated: 2026-07-23
+Last updated: 2026-07-26
 
 ## Enforced controls
 
 - `pnpm-lock.yaml` is the only dependency lock and frozen installation is mandatory in CI.
 - pnpm is exact-pinned with SHA-512 integrity (Corepack's hexadecimal form); package store integrity and strict peers are enabled.
 - Dependencies must be at least 24 hours old unless a reviewed emergency change temporarily records an exception.
-- Dependency lifecycle scripts are denied by default through an empty `onlyBuiltDependencies` list.
+- Dependency lifecycle scripts are denied by default through an empty
+  `allowBuilds` policy.
 - CI actions use reviewed full commit SHAs and least-privilege permissions; checkout persistence is disabled.
 - Pull requests receive GitHub dependency review with high-severity and selected copyleft-license denial.
-- Scheduled/branch CI runs `pnpm audit --audit-level high` and validates a machine-readable production license inventory.
+- Scheduled/branch CI uses pnpm 11's npm Bulk Advisory integration to run
+  `pnpm audit --audit-level high` and validates a machine-readable production
+  license inventory.
 - Dependabot opens bounded weekly npm and GitHub Actions updates; sensitive dependency classes are reviewed rather than auto-merged.
 - `pnpm release:pack` creates local inspectable tarballs without registry
   publication. Only the protected `release.yml` environment can publish those

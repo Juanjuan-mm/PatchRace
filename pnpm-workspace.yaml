@@ -9,5 +9,8 @@ linkWorkspacePackages: false
 
 minimumReleaseAge: 1440
 
-onlyBuiltDependencies: []
+allowBuilds: {}
+blockExoticSubdeps: true
+overrides:
+  brace-expansion: 5.0.8
 preferWorkspacePackages: true

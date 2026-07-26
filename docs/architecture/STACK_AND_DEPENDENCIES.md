@@ -31,7 +31,7 @@ options rather than relying on them. Sources: [Node release status](https://node
 
 ## Workspace and package manager
 
-- pnpm `10.x`, pinned to an exact version plus integrity through the root `packageManager` field at scaffold time.
+- pnpm `11.x`, pinned to an exact version plus integrity through the root `packageManager` field at scaffold time.
 - One committed `pnpm-lock.yaml`; CI uses `pnpm install --frozen-lockfile` and rejects drift.
 - `pnpm-workspace.yaml` declares packages/fixtures explicitly. No implicit recursive glob may include agent-created run directories.
 - Core build graph uses TypeScript project references and `pnpm --filter`; no Nx/Turborepo dependency in v0.1.
