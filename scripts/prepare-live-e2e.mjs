@@ -47,11 +47,23 @@ const instruction = `PatchRace currently supports Node 22.22+ and Node 24. Add c
 
 Update every public package engine, runtime doctor behavior and remediation, the provider-free platform verifier, the GitHub Actions platform matrix, and the relevant public platform/development documentation. Add or update deterministic regression coverage. Keep the dependency graph and lockfile unchanged, preserve exact platform labels, and do not weaken any release, security, privacy, or cleanup gate.
 `;
-const verifier = `import { readFileSync, readdirSync } from "node:fs";
+const verifier = `import { execFileSync } from "node:child_process";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = process.cwd();
 const read = (path) => readFileSync(resolve(root, path), "utf8");
+const baselineCommit = ${JSON.stringify(commit)};
+const dependencyFields = [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+  "peerDependencies",
+];
+const sortedEntries = (value) =>
+  Object.entries(value ?? {}).sort(([left], [right]) =>
+    left.localeCompare(right),
+  );
 const manifests = [
   "package.json",
   ...readdirSync(resolve(root, "packages"), { withFileTypes: true })
@@ -60,12 +72,26 @@ const manifests = [
 ];
 for (const path of manifests) {
   const manifest = JSON.parse(read(path));
+  const baseline = JSON.parse(
+    execFileSync("git", ["show", baselineCommit + ":" + path], {
+      cwd: root,
+      encoding: "utf8",
+    }),
+  );
   if (manifest.engines?.node !== ">=22.22.0 <27")
     throw new Error(\`\${path} does not declare the reviewed Node range\`);
+  for (const field of dependencyFields)
+    if (
+      JSON.stringify(sortedEntries(manifest[field])) !==
+      JSON.stringify(sortedEntries(baseline[field]))
+    )
+      throw new Error(\`\${path} changes \${field}\`);
 }
 const doctor = read("packages/core/src/doctor.ts");
-for (const value of ["major === 26", "22.22+/24.x/26.x", "Node 26"])
+for (const value of ["major === 26", "22.22+/24.x/26.x"])
   if (!doctor.includes(value)) throw new Error(\`doctor omits \${value}\`);
+if (!/Node 22.*24.*26/u.test(doctor))
+  throw new Error("doctor remediation omits the supported Node lines");
 const platform = read("scripts/verify-qa-platform.mjs");
 for (const value of ['"win32"', "22, 24, 26"])
   if (!platform.includes(value)) throw new Error(\`platform gate omits \${value}\`);
@@ -179,7 +205,7 @@ const task = {
       maxChangedFiles: 24,
       maxLines: 700,
       maxBinaryFiles: 0,
-      allowDependencyChanges: false,
+      allowDependencyChanges: true,
       allowLockfileChanges: false,
     },
   ],

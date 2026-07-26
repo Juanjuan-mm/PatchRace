@@ -146,3 +146,10 @@ the observed token/cost totals stay within authorization. A partial,
 budget-exhausted, unavailable-token, or failed-gate run retains durable local
 evidence but cannot produce passing parity evidence. Raw evidence stays
 local-sensitive and is never uploaded automatically.
+
+The task intentionally requires `engines.node` edits in every public package,
+so its broad manifest-change assertion is enabled. A separate public verifier
+compares the dependency fields in every package manifest with the frozen
+baseline commit, while the diff gate independently forbids lockfile changes.
+Engine metadata can therefore change without accidentally permitting
+dependency-graph drift.
