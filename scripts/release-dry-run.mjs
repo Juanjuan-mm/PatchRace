@@ -83,7 +83,7 @@ const audit = [];
 for (const tarballName of tarballs) {
   const tarball = join(outputRoot, tarballName);
   const entries = run("tar", ["-tzf", tarball])
-    .split("\n")
+    .split(/\r?\n/u)
     .filter(Boolean)
     .sort();
   const packedManifest = JSON.parse(tarText(tarball, "package/package.json"));
